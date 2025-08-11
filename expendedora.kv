@@ -1,0 +1,487 @@
+#:kivy 2.0.0
+
+<BotonImagen@ButtonBehavior+Image>:
+    source: ""
+    size_hint: None, None
+    size: 40, 50
+
+<BotonRecarga>:
+    orientation: 'vertical'
+    spacing: 5
+    padding: 10
+    size_hint: None, None
+    size: (150, 150)
+    canvas.before:
+        Color:
+            rgba: 0.121, 0.247, 0.376, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: (0.137, 0.455, 0.796, 1) if self.seleccionado else (0, 0, 0, 0)
+        Line:
+            width: 4
+            rectangle: (self.x, self.y, self.width, self.height)
+    Image:
+        source: root.img_src
+        size_hint: None, None
+        size: 64, 64
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Centrado total para imagen
+    Label:
+        text: root.text_btn
+        font_name: 'LatoLight'
+        font_size: '24sp'
+        color: (1, 1, 1, 1)
+        size_hint_y: None
+        height: self.texture_size[1]
+        halign: "center"
+        valign: "middle"
+        text_size: self.width, None
+<CarritoItem>:
+    size_hint_y: None
+    height: 50
+    canvas.before:
+        Color:
+            rgba: app.azul_oscuro
+        Line:
+            width: 1.2
+            rectangle: self.x, self.y, self.width, self.height
+
+    GridLayout:
+        cols: 4
+        spacing: 5
+        padding: 5
+
+        Label:
+            id: label_descripcion
+            text: "Item"
+            font_size: 18
+            color: 0, 0, 0, 1
+
+        BoxLayout:
+            spacing: 2
+            Button:
+                text: "-"
+                size_hint_x: None
+                width: 40
+                on_press: root.disminuir()
+            Label:
+                id: label_cantidad
+                text: str(root.cantidad)
+                font_size: 18
+                color: 0, 0, 0, 1
+            Button:
+                text: "+"
+                size_hint_x: None
+                width: 40
+                on_press: root.aumentar()
+
+        Label:
+            text: f"${root.costo_unitario}"
+            font_size: 18
+            color: 0, 0, 0, 1
+
+        Label:
+            id: label_total
+            text: f"${root.total}"
+            font_size: 18
+            color: 0, 0, 0, 1
+            
+<GestorPantallas>:
+    PantallaInicio:
+    PantallaRecarga:
+    PantallaInformacion:
+    PantallaContacto:
+    PantallaLogin:
+    PantallaCarrito:
+
+<PantallaInicio>:
+    name: "inicio"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "logo.png"
+            size_hint: (0.5, 0.4)
+            pos_hint: {"center_x": 0.5, "top": 0.8}
+
+        Button:
+            text: "RECARGAR"
+            font_name: 'LatoLight'
+            font_size: '36sp'
+            size_hint: (0.3, 0.15)
+            pos_hint: {"center_x": 0.5, "y": 0.2}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: (1, 1, 1, 1)
+            on_press:
+                app.root.current = "recarga"
+
+        BotonImagen:
+            id: superusuario
+            source: "superusuario.png"
+            pos_hint: {"right": 0.98, "top": 0.98}
+            on_press: print("Superusuario")
+            opacity: 0 #oculto al principio
+
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            size_hint: None, None
+            size: (120, 50)
+            pos_hint: {"x": 0.02, "y": 0.02}
+            BotonImagen:
+                source: "info.png"
+                on_press: app.root.current = "informacion"
+            BotonImagen:
+                source: "contacto.png"
+                on_press: app.root.current = "contacto"
+
+<PantallaRecarga>:
+    name: "recarga"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "logo.png"
+            size_hint: None, None
+            size: 120, 100
+            pos_hint: {"x": 0.02, "top": 0.98}
+
+        Label:
+            text: "Seleccione la capacidad del botellón a llenar"
+            font_name: 'LatoLight'
+            font_size: '26sp'
+            color: 0, 0, 0, 1
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.85}
+
+        BotonImagen:
+            id: carrito
+            source: "carrito.png"
+            size: 90, 70
+            pos_hint: {"right": 0.98, "top": 0.98}
+            on_press:
+                app.root.current = "carrito"
+
+        GridLayout:
+            id: grid_botones
+            cols: 3
+            spacing: 30
+            size_hint: None, None
+            size: 510, 330
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            padding: 10
+
+            BotonRecarga:
+                img_src: "icono_1.png"
+                text_btn: "1 L"
+                pantalla_recarga: root
+
+            BotonRecarga:
+                img_src: "icono_2.png"
+                text_btn: "2 L"
+                pantalla_recarga: root
+
+            BotonRecarga:
+                img_src: "icono_5.png"
+                text_btn: "5 L"
+                pantalla_recarga: root
+
+            BotonRecarga:
+                img_src: "icono_10.png"
+                text_btn: "10 L"
+                pantalla_recarga: root
+
+            BotonRecarga:
+                img_src: "icono_20.png"
+                text_btn: "20 L"
+                pantalla_recarga: root
+
+            BotonRecarga:
+                img_src: "mas.png"
+                text_btn: "Añadir"  # No muestra texto
+                pantalla_recarga: root
+
+        Button:
+            text: "Volver"
+            font_name: 'LatoLight'
+            font_size: '20sp'
+            size_hint: (0.12, 0.08)
+            pos_hint: {"x": 0.02, "y": 0.02}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: (1, 1, 1, 1)
+            on_press:
+                app.root.current = "inicio"
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: (300, 80)
+            pos_hint: {'right': 0.98, 'y': 0.01}
+            Label:
+                text: "Precio L/$: 1000"
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+            Label:
+                text: "Total a pagar: ${}".format(root.total_pagar)
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+
+<PantallaInformacion>:
+    name: "informacion"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "logo.png"
+            size_hint: None, None
+            size: 120, 100
+            pos_hint: {"x": 0.02, "top": 0.98}
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: 0.8, None
+            height: self.minimum_height
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            Label:
+                text: "Esta es una expendedora automatizada de agua.\nGracias por preferirnos."
+                font_name: 'LatoLight'
+                font_size: '24sp'
+                halign: "center" 
+                valign: "middle"
+                color: 0, 0, 0, 1
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1]
+
+        Button:
+            text: "Volver"
+            font_name: 'LatoLight'
+            font_size: '20sp'
+            size_hint: (0.12, 0.08)
+            pos_hint: {"x": 0.02, "y": 0.02}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: (1, 1, 1, 1)
+            on_press:
+                app.root.current = "inicio"
+
+<PantallaContacto>:
+    name: "contacto"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "logo.png"
+            size_hint: None, None
+            size: 120, 100
+            pos_hint: {"x": 0.02, "top": 0.98}
+
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            size_hint: None, None
+            size: 400, 300
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+            Image:
+                source: "instagram.png"
+                size_hint_y: None
+                height: 50
+            Label:
+                text: "Instagram: @example"
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+
+            Image:
+                source: "correo.png"
+                size_hint_y: None
+                height: 50
+            Label:
+                text: "Correo: example@example.com"
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+
+            Image:
+                source: "telefono.png"
+                size_hint_y: None
+                height: 50
+            Label:
+                text: "Teléfono: +1 234 567 890"
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+
+            Image:
+                source: "whatsapp.png"
+                size_hint_y: None
+                height: 50
+            Label:
+                text: "WhatsApp: +1 987 654 321"
+                font_name: 'LatoLight'
+                font_size: '20sp'
+                color: 0, 0, 0, 1
+
+        Button:
+            text: "Volver"
+            font_name: 'LatoLight'
+            font_size: '20sp'
+            size_hint: (0.12, 0.08)
+            pos_hint: {"x": 0.02, "y": 0.02}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: (1, 1, 1, 1)
+            on_press:
+                app.root.current = "inicio"
+         
+<PantallaLogin>:
+    name: "login"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Image:
+            source: "logo.png"
+            size_hint: None, None
+            size: 120, 100
+            pos_hint: {"x": 0.02, "top": 0.98}
+
+        Image:
+            source: "superusuario.png"
+            size_hint: None, None
+            size: 100, 100
+            pos_hint: {"center_x": 0.5, "top": 0.75}
+
+        Label:
+            text: "Modo Administrador"
+            font_name: 'LatoLight'
+            font_size: '28sp'
+            color: 0, 0, 0, 1
+            pos_hint: {"center_x": 0.5, "top": 0.55 }
+            size_hint: None, None
+            size: self.texture_size
+
+        TextInput:
+            id: input_password
+            password: True
+            hint_text: "Contraseña"
+            size_hint: None, None
+            size: 300, 50
+            pos_hint: {"center_x": 0.5, "center_y": 0.42}
+            font_name: 'LatoLight'
+            font_size: '22sp'
+            multiline: False
+
+        Button:
+            text: "Ingresar"
+            font_name: 'LatoLight'
+            font_size: '22sp'
+            size_hint: None, None
+            size: 300, 50
+            pos_hint: {"center_x": 0.5, "center_y": 0.32}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: 1, 1, 1, 1
+            on_press: root.verificar_contraseña()
+
+        Label:
+            id: etiqueta_status
+            text: ""
+            font_name: 'LatoLight'
+            font_size: '18sp'
+            color: (1, 0, 0, 1)
+            pos_hint: {"center_x": 0.5, "center_y": 0.18}
+            size_hint: None, None
+            size: self.texture_size
+
+        Button:
+            text: "Volver"
+            font_name: 'LatoLight'
+            font_size: '20sp'
+            size_hint: (0.12, 0.08)
+            pos_hint: {"x": 0.02, "y": 0.02}
+            background_normal: ""
+            background_color: (0.121, 0.247, 0.376, 1)
+            color: (1, 1, 1, 1)
+            on_press:
+                app.root.current = "inicio"
+                
+<PantallaCarrito>:
+    name: "carrito"
+    id: carrito_screen
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "Carrito de Recarga"
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.95}
+            font_size: 26
+            color: 0, 0, 0, 1
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.95, 0.7
+            pos_hint: {"center_x": 0.5, "top": 0.85}
+
+            ScrollView:
+                GridLayout:
+                    id: contenedor_items
+                    cols: 1
+                    spacing: 10
+                    size_hint_y: None
+                    height: self.minimum_height
+
+        Label:
+            id: total_label
+            text: "Total: $0"
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"x": 0.05, "y": 0.02}
+            font_size: 20
+            color: 0, 0, 0, 1
+
+        Button:
+            text: "Volver"
+            size_hint: None, None
+            size: 100, 40
+            pos_hint: {"right": 0.98, "y": 0.02}
+            on_press:
+                app.root.current = "recarga"
