@@ -39,9 +39,56 @@
         valign: "middle"
         text_size: self.width, None
 
+<BotonVolver@ButtonBehavior+BoxLayout>:
+    orientation: 'horizontal'
+    spacing: 8
+    size_hint: None, None
+    size: 120, 40
+    padding: 0
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0  # Fondo transparente
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Image:
+        source: "images/volver.png"
+        size_hint: None, None
+        size: 50, 50
+    # Label:
+    #     text: "Volver"
+    #     font_name: 'Intro'
+    #     font_size: '20sp'
+    #     color: 0.121, 0.247, 0.376, 1
+    #     size_hint_y: None
+    #     height: 30
 
-
-
+<BotonContinuar@ButtonBehavior+BoxLayout>:
+    orientation: 'horizontal'
+    spacing: 8
+    size_hint: None, None
+    size: 180, 50
+    padding: 0
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0  # Fondo transparente
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        text: "Continuar"
+        font_name: 'Intro'
+        font_size: '20sp'
+        color: (0.110, 0.235, 0.392)
+        size_hint_x: None
+        width: 140
+        halign: "left"
+        valign: "middle"
+        text_size: self.size
+    Image:
+        source: "images/continuar.png"
+        size_hint: None, None
+        size: 50, 50
 
 <BotonOperacion>:
     orientation: 'vertical'
@@ -183,10 +230,10 @@
                 size: self.size
 
         Label:
-            text: "Seleccione la capacidad del botellón a llenar"
+            text: "Seleccione la capacidad del botellón"
             font_name: 'Intro'
             font_size: '26sp'
-            color: 0, 0, 0, 1
+            color: (0.110, 0.235, 0.392)
             size_hint: None, None
             size: self.texture_size
             pos_hint: {"center_x": 0.5, "top": 0.85}
@@ -211,27 +258,27 @@
 
             BotonRecarga:
                 img_src: "images/icono_1.png"
-                text_btn: "1 L"
+                text_btn: "1 Litro"
                 pantalla_recarga: root
 
             BotonRecarga:
                 img_src: "images/icono_2.png"
-                text_btn: "2 L"
+                text_btn: "2 Litros"
                 pantalla_recarga: root
 
             BotonRecarga:
                 img_src: "images/icono_5.png"
-                text_btn: "5 L"
+                text_btn: "5 Litros"
                 pantalla_recarga: root
 
             BotonRecarga:
                 img_src: "images/icono_20.png"
-                text_btn: "10 L"
+                text_btn: "10 Litros"
                 pantalla_recarga: root
 
             BotonRecarga:
                 img_src: "images/icono_10.png"
-                text_btn: "20 L"
+                text_btn: "19 Litros"
                 pantalla_recarga: root
         
         # CONTROLES CANTIDAD
@@ -306,28 +353,31 @@
             Widget:  # Columna 5 vacía
         
         
-        Button:
-            text: "Volver"
-            font_name: 'Intro'
-            font_size: '20sp'
-            size_hint: (0.12, 0.08)
-            pos_hint: {"x": 0.02, "y": 0.02}
-            background_normal: ""
-            background_color: (0.121, 0.247, 0.376, 1)
-            color: (1, 1, 1, 1)
-            on_press:
-                app.root.current = "inicio"
+        BotonVolver:
+            pos_hint: {"x": 0.03, "y": 0.032}
+            on_press: app.root.current = "inicio"
 
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint: None, None
-            size: (300, 80)
-            pos_hint: {'right': 0.98, 'y': 0.01}
-            Label:
-                text: "Total a pagar: ${}".format(root.total_pagar)
-                font_name: 'Intro'
-                font_size: '20sp'
-                color: 0, 0, 0, 1
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        size: (300, 110)
+        pos_hint: {'right': 0.65, 'y': 0.02}
+        spacing: 8
+
+        Label:
+            text: "Total: ${} Bs".format(root.total_pagar)
+            font_name: 'Intro'
+            font_size: '18sp'
+            color: (1.0, 1.0, 1.0)
+            size_hint_y: None
+            height: 40
+
+    BotonContinuar:
+        size_hint_y: None
+        height: 50
+        pos_hint: {'right': 0.95, 'y': 0.03}
+        on_press: app.root.current = "carrito"
+        # Elimina el pos_hint aquí para que use el del BoxLayout
 
         
 
