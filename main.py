@@ -4,7 +4,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
-from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty
+from kivy.uix.button import Button
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty, StringProperty
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 
@@ -35,6 +38,11 @@ class BotonRecarga(ButtonBehavior, BoxLayout):
 
     def deseleccionar(self, *args):
         self.seleccionado = False
+
+class BotonOperacion(ButtonBehavior, RelativeLayout):
+    color_fondo = ListProperty([1, 10, 10, 1])
+    img_src = StringProperty("")
+    icono = StringProperty("")
 
 class PantallaInicio(Screen):
     tiempo_presionado = NumericProperty(0)
@@ -85,6 +93,7 @@ class CarritoItem(BoxLayout):
 
 class PantallaRecarga(Screen):
     total_pagar = NumericProperty(0)
+    cantidad = NumericProperty(1)
 
     def on_pre_enter(self):
         self.deseleccionar_todos()
@@ -93,6 +102,15 @@ class PantallaRecarga(Screen):
         for btn in self.ids.grid_botones.children:
             if btn != seleccionado:
                 btn.seleccionado = False
+
+    def incrementar_cantidad(self):
+        self.cantidad += 1
+        self.ids.cantidad_label.text = str(self.cantidad)
+
+    def decrementar_cantidad(self):
+        if self.cantidad > 1:
+            self.cantidad -= 1
+            self.ids.cantidad_label.text = str(self.cantidad)
 
 class PantallaInformacion(Screen):
     pass

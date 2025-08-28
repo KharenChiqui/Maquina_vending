@@ -7,16 +7,17 @@
 
 <BotonRecarga>:
     orientation: 'vertical'
-    spacing: 5
-    padding: 10
+    spacing: 10
+    padding: [10, 20, 10, 10]
     size_hint: None, None
     size: (150, 150)
     canvas.before:
         Color:
             rgba: 0.121, 0.247, 0.376, 1
-        Rectangle:
+        RoundedRectangle:
             pos: self.pos
             size: self.size
+            radius: [15,]
         Color:
             rgba: (0.137, 0.455, 0.796, 1) if self.seleccionado else (0, 0, 0, 0)
         Line:
@@ -25,8 +26,8 @@
     Image:
         source: root.img_src
         size_hint: None, None
-        size: 64, 64
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Centrado total para imagen
+        size: 90,  90
+        pos_hint: {"center_x": 0.5, "top": 1}  # Centrado total para imagen
     Label:
         text: root.text_btn
         font_name: 'Intro'
@@ -37,6 +38,24 @@
         halign: "center"
         valign: "middle"
         text_size: self.width, None
+
+
+
+
+
+<BotonOperacion>:
+    orientation: 'vertical'
+    spacing: 10
+    padding: [10, 20, 10, 10]
+    size_hint: None, None
+    size: (50, 50)
+    Image:
+        source: root.img_src
+        size_hint: None, None
+        size: 50,  50
+        pos_hint: {"center_x": 0.5, "center_y": 0.6}  # Centrado total para imagen
+
+
 
 <MyRoundedButton@Button>:
     background_normal: ""
@@ -159,14 +178,9 @@
             Color:
                 rgba: 1, 1, 1, 1
             Rectangle:
+                source: "images/fondo.png"
                 pos: self.pos
                 size: self.size
-
-        Image:
-            source: "images/logo.png"
-            size_hint: None, None
-            size: 120, 100
-            pos_hint: {"x": 0.02, "top": 0.98}
 
         Label:
             text: "Seleccione la capacidad del botellón a llenar"
@@ -185,14 +199,15 @@
             on_press:
                 app.root.current = "carrito"
 
+        # BOTONES PRODUCTOS  
         GridLayout:
             id: grid_botones
-            cols: 3
+            cols: 5
             spacing: 30
             size_hint: None, None
-            size: 510, 330
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            padding: 10
+            size: 870, 150
+            pos_hint: {"center_x": 0.5, "center_y": 0.6}
+            padding: 0
 
             BotonRecarga:
                 img_src: "images/icono_1.png"
@@ -210,20 +225,87 @@
                 pantalla_recarga: root
 
             BotonRecarga:
-                img_src: "images/icono_10.png"
+                img_src: "images/icono_20.png"
                 text_btn: "10 L"
                 pantalla_recarga: root
 
             BotonRecarga:
-                img_src: "images/icono_20.png"
+                img_src: "images/icono_10.png"
                 text_btn: "20 L"
                 pantalla_recarga: root
+        
+        # CONTROLES CANTIDAD
+        GridLayout:
+            cols: 5
+            spacing: 50
+            padding: 20
+            size_hint: None, None
+            size: 870, 70
+            pos_hint: {"center_x": 0.5, "y": 0.32}
 
-            BotonRecarga:
+            Widget:  # Columna 1 vacía
+
+            BotonOperacion:
+                img_src: "images/menos.png"
+                on_press: root.decrementar_cantidad()
+
+            Label:
+                id: cantidad_label
+                text: str(root.cantidad)
+                font_size: 28
+                size_hint: None, None
+                size: 70, 60
+                color: 0, 0, 0, 1
+                canvas.before:
+                    Color:
+                        rgba: 0.9, 0.9, 0.9, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [15,]
+
+            BotonOperacion:
                 img_src: "images/mas.png"
-                text_btn: "Añadir"  # No muestra texto
-                pantalla_recarga: root
+                on_press: root.incrementar_cantidad()
 
+            Widget:  # Columna 5 vacía
+        
+        #BOTON AGREGAR
+        GridLayout:
+            cols: 5
+            spacing: 50
+            padding: 20
+            size_hint: None, None
+            size: 870, 70
+            pos_hint: {"center_x": 0.5, "y": 0.18}
+
+            Widget:  # Columna 1 vacía
+            Widget:  # Columna 2 vacía
+
+            Button:
+                text: "AÑADIR"
+                font_name: 'Intro'
+                font_size: 22
+                size_hint: None, None
+                size: 120, 60
+                background_normal: ""
+                background_color: 0, 0, 0, 0  # <-- Fondo completamente transparente
+                color: 1, 1, 1, 1
+                canvas.before:
+                    Color:
+                        rgba: (0.027, 0.294, 0.541, 1)
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [15,]
+                # AQUI DEBO CREAR LA FUNCION PARA MANEJAR LA LISTA DEL CARRITO
+                on_press: root.agregar_al_carrito()
+
+
+            Widget:  # Columna 4 vacía
+            Widget:  # Columna 5 vacía
+        
+        
         Button:
             text: "Volver"
             font_name: 'Intro'
@@ -242,15 +324,12 @@
             size: (300, 80)
             pos_hint: {'right': 0.98, 'y': 0.01}
             Label:
-                text: "Precio L/$: 1000"
-                font_name: 'Intro'
-                font_size: '20sp'
-                color: 0, 0, 0, 1
-            Label:
                 text: "Total a pagar: ${}".format(root.total_pagar)
                 font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
+
+        
 
 <PantallaInformacion>:
     name: "informacion"
