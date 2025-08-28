@@ -10,7 +10,7 @@ from kivy.utils import get_color_from_hex
 
 Window.size = (1024, 600)
 
-LabelBase.register(name='LatoLight', fn_regular='Lato-Light.ttf')
+LabelBase.register(name='LatoLight', fn_regular='fonts/Lato-Light.ttf')
 
 PRECIO_LITRO = 1000
 SUPERUSER_PASSWORD = "aguaSegura24"
