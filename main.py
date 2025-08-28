@@ -10,6 +10,19 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty, StringProperty
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
+import requests # Asegúrate de tener requests instalado: pip install requests
+
+def obtener_precio_dolar():
+    try:
+        response = requests.get("https://ve.dolarapi.com/v1/dolares/oficial", timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            return float(data.get("promedio", 1))
+    except Exception as e:
+        print("Error consultando API dólar:", e)
+    return 1  # Valor por defecto si falla la API
+
+PRECIO_DOLAR = obtener_precio_dolar()
 
 Window.size = (1024, 600)
 
@@ -17,6 +30,21 @@ LabelBase.register(name='Intro', fn_regular='fonts/Intro.otf')
 
 PRECIO_LITRO = 1000
 SUPERUSER_PASSWORD = "aguaSegura24"
+
+class Product:
+    def __init__(self, litros, precio):
+        self.litros = litros
+        self.precio = precio
+
+#Debo poner precio en $ para que se vaya actualizando de acuerdo a la tasa BCV. 
+
+PRODUCTS = [
+    Product(19, int(round(0.5 * PRECIO_DOLAR, 0))),
+    Product(10, int(round(0.35 * PRECIO_DOLAR, 0))),
+    Product(5, int(round(0.25 * PRECIO_DOLAR, 0))),
+    Product(2, int(round(0.10 * PRECIO_DOLAR, 0))),
+    Product(1, int(round(0.05 * PRECIO_DOLAR, 0)))
+]
 
 class BotonRecarga(ButtonBehavior, BoxLayout):
     img_src = StringProperty("")
@@ -94,6 +122,8 @@ class CarritoItem(BoxLayout):
 class PantallaRecarga(Screen):
     total_pagar = NumericProperty(0)
     cantidad = NumericProperty(1)
+    producto_seleccionado = NumericProperty(0)  # índice en PRODUCTS
+    carrito = ListProperty([])  # lista de dicts: {'producto': Product, 'cantidad': int}
 
     def on_pre_enter(self):
         self.deseleccionar_todos()
@@ -103,14 +133,44 @@ class PantallaRecarga(Screen):
             if btn != seleccionado:
                 btn.seleccionado = False
 
+    def seleccionar_producto(self, index):
+        self.producto_seleccionado = index
+        self.cantidad = 1  # reset cantidad al seleccionar producto
+
     def incrementar_cantidad(self):
         self.cantidad += 1
-        self.ids.cantidad_label.text = str(self.cantidad)
 
     def decrementar_cantidad(self):
         if self.cantidad > 1:
             self.cantidad -= 1
-            self.ids.cantidad_label.text = str(self.cantidad)
+
+    def agregar_al_carrito(self):
+        # Busca si ya existe el producto en el carrito
+        for item in self.carrito:
+            if item['producto'] == PRODUCTS[self.producto_seleccionado]:
+                item['cantidad'] += self.cantidad
+                item['monto_final'] = item['cantidad'] * item['producto'].precio
+                break
+        else:
+            self.carrito.append({
+                'producto': PRODUCTS[self.producto_seleccionado],
+                'cantidad': self.cantidad,
+                'precio': PRODUCTS[self.producto_seleccionado].precio,
+                'monto_final': self.cantidad * PRODUCTS[self.producto_seleccionado].precio
+            })
+        print("Carrito actual:", [
+            (item['producto'].litros, item['cantidad'], item['precio'], item['monto_final'])
+            for item in self.carrito
+        ])
+
+    def continuar(self):
+        total_general = 0
+        print("Resumen del carrito:")
+        for item in self.carrito:
+            print(f"{item['cantidad']} x {item['producto'].litros}L - ${item['precio']} c/u = ${item['monto_final']}")
+            total_general += item['monto_final']
+        print(f"TOTAL A PAGAR: ${total_general}")
+
 
 class PantallaInformacion(Screen):
     pass
@@ -154,6 +214,7 @@ class GestorPantallas(ScreenManager):
 
 class ExpendedoraApp(App):
     azul_oscuro = get_color_from_hex("#1F3F60")
+    PRODUCTS = PRODUCTS  # Esto hace accesible PRODUCTS como app.PRODUCTS
     def build(self):
         return GestorPantallas()
 

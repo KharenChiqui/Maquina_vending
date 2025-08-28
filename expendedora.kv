@@ -260,26 +260,31 @@
                 img_src: "images/icono_1.png"
                 text_btn: "1 Litro"
                 pantalla_recarga: root
+                on_press: root.seleccionar_producto(4)
 
             BotonRecarga:
                 img_src: "images/icono_2.png"
                 text_btn: "2 Litros"
                 pantalla_recarga: root
+                on_press: root.seleccionar_producto(3)
 
             BotonRecarga:
                 img_src: "images/icono_5.png"
                 text_btn: "5 Litros"
                 pantalla_recarga: root
+                on_press: root.seleccionar_producto(2)
 
             BotonRecarga:
                 img_src: "images/icono_20.png"
                 text_btn: "10 Litros"
                 pantalla_recarga: root
+                on_press: root.seleccionar_producto(1)
 
             BotonRecarga:
                 img_src: "images/icono_10.png"
                 text_btn: "19 Litros"
                 pantalla_recarga: root
+                on_press: root.seleccionar_producto(0)
         
         # CONTROLES CANTIDAD
         GridLayout:
@@ -365,7 +370,7 @@
         spacing: 8
 
         Label:
-            text: "Total: ${} Bs".format(root.total_pagar)
+            text: "Precio: ${} Bs".format(app.PRODUCTS[root.producto_seleccionado].precio)
             font_name: 'Intro'
             font_size: '18sp'
             color: (1.0, 1.0, 1.0)
@@ -376,7 +381,7 @@
         size_hint_y: None
         height: 50
         pos_hint: {'right': 0.95, 'y': 0.03}
-        on_press: app.root.current = "carrito"
+        on_press: root.continuar()
         # Elimina el pos_hint aquí para que use el del BoxLayout
 
         
