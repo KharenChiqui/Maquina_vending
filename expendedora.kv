@@ -29,7 +29,7 @@
         pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Centrado total para imagen
     Label:
         text: root.text_btn
-        font_name: 'LatoLight'
+        font_name: 'Intro'
         font_size: '24sp'
         color: (1, 1, 1, 1)
         size_hint_y: None
@@ -37,6 +37,18 @@
         halign: "center"
         valign: "middle"
         text_size: self.width, None
+
+<MyRoundedButton@Button>:
+    background_normal: ""
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: 0.121, 0.247, 0.376, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [20,]
+
 <CarritoItem>:
     size_hint_y: None
     height: 50
@@ -102,22 +114,21 @@
             Color:
                 rgba: 1, 1, 1, 1
             Rectangle:
+                source: "images/fondo.png"
                 pos: self.pos
                 size: self.size
 
         Image:
-            source: "images/logo.png"
-            size_hint: (0.5, 0.4)
-            pos_hint: {"center_x": 0.5, "top": 0.8}
+            source: "images/logo-inicio.png"
+            size_hint: (0.8, 0.6)
+            pos_hint: {"center_x": 0.5, "top": 0.95}
 
-        Button:
+        MyRoundedButton:
             text: "RECARGAR"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '36sp'
             size_hint: (0.3, 0.15)
             pos_hint: {"center_x": 0.5, "y": 0.2}
-            background_normal: ""
-            background_color: (0.121, 0.247, 0.376, 1)
             color: (1, 1, 1, 1)
             on_press:
                 app.root.current = "recarga"
@@ -129,18 +140,17 @@
             on_press: print("Superusuario")
             opacity: 0 #oculto al principio
 
-        BoxLayout:
-            orientation: "horizontal"
-            spacing: 10
-            size_hint: None, None
-            size: (120, 50)
+
+        BotonImagen:
+            source: "images/info.png"
+            on_press: app.root.current = "informacion"
             pos_hint: {"x": 0.02, "y": 0.02}
-            BotonImagen:
-                source: "images/info.png"
-                on_press: app.root.current = "informacion"
-            BotonImagen:
-                source: "images/contacto.png"
-                on_press: app.root.current = "contacto"
+
+        BotonImagen:
+            source: "images/contacto.png"
+            on_press: app.root.current = "contacto"
+            pos_hint: {"right": 0.98, "y": 0.02}
+
 
 <PantallaRecarga>:
     name: "recarga"
@@ -160,7 +170,7 @@
 
         Label:
             text: "Seleccione la capacidad del botellón a llenar"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '26sp'
             color: 0, 0, 0, 1
             size_hint: None, None
@@ -216,7 +226,7 @@
 
         Button:
             text: "Volver"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '20sp'
             size_hint: (0.12, 0.08)
             pos_hint: {"x": 0.02, "y": 0.02}
@@ -233,12 +243,12 @@
             pos_hint: {'right': 0.98, 'y': 0.01}
             Label:
                 text: "Precio L/$: 1000"
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
             Label:
                 text: "Total a pagar: ${}".format(root.total_pagar)
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
@@ -265,7 +275,7 @@
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             Label:
                 text: "Esta es una expendedora automatizada de agua.\nGracias por preferirnos."
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '24sp'
                 halign: "center" 
                 valign: "middle"
@@ -276,7 +286,7 @@
 
         Button:
             text: "Volver"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '20sp'
             size_hint: (0.12, 0.08)
             pos_hint: {"x": 0.02, "y": 0.02}
@@ -315,7 +325,7 @@
                 height: 50
             Label:
                 text: "Instagram: @example"
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
@@ -325,7 +335,7 @@
                 height: 50
             Label:
                 text: "Correo: example@example.com"
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
@@ -335,7 +345,7 @@
                 height: 50
             Label:
                 text: "Teléfono: +1 234 567 890"
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
@@ -345,13 +355,13 @@
                 height: 50
             Label:
                 text: "WhatsApp: +1 987 654 321"
-                font_name: 'LatoLight'
+                font_name: 'Intro'
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
         Button:
             text: "Volver"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '20sp'
             size_hint: (0.12, 0.08)
             pos_hint: {"x": 0.02, "y": 0.02}
@@ -385,7 +395,7 @@
 
         Label:
             text: "Modo Administrador"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '28sp'
             color: 0, 0, 0, 1
             pos_hint: {"center_x": 0.5, "top": 0.55 }
@@ -399,13 +409,13 @@
             size_hint: None, None
             size: 300, 50
             pos_hint: {"center_x": 0.5, "center_y": 0.42}
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '22sp'
             multiline: False
 
         Button:
             text: "Ingresar"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '22sp'
             size_hint: None, None
             size: 300, 50
@@ -418,7 +428,7 @@
         Label:
             id: etiqueta_status
             text: ""
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '18sp'
             color: (1, 0, 0, 1)
             pos_hint: {"center_x": 0.5, "center_y": 0.18}
@@ -427,7 +437,7 @@
 
         Button:
             text: "Volver"
-            font_name: 'LatoLight'
+            font_name: 'Intro'
             font_size: '20sp'
             size_hint: (0.12, 0.08)
             pos_hint: {"x": 0.02, "y": 0.02}
@@ -485,3 +495,6 @@
             pos_hint: {"right": 0.98, "y": 0.02}
             on_press:
                 app.root.current = "recarga"
+
+
+
