@@ -36,7 +36,6 @@ class Product:
         self.litros = litros
         self.precio = precio
 
-#Debo poner precio en $ para que se vaya actualizando de acuerdo a la tasa BCV. 
 
 PRODUCTS = [
     Product(19, int(round(0.5 * PRECIO_DOLAR, 0))),
@@ -104,7 +103,7 @@ class CarritoItem(BoxLayout):
 
     def actualizar_total(self):
         self.total = self.cantidad * self.costo_unitario
-        self.ids.label_total.text = f"${self.total}"
+        self.ids.label_total.text = f"Bs {self.total}"
         app = App.get_running_app()
         app.root.ids.carrito_screen.actualizar_total_carrito()
 
@@ -167,10 +166,9 @@ class PantallaRecarga(Screen):
         total_general = 0
         print("Resumen del carrito:")
         for item in self.carrito:
-            print(f"{item['cantidad']} x {item['producto'].litros}L - ${item['precio']} c/u = ${item['monto_final']}")
+            print(f"{item['cantidad']} x {item['producto'].litros}L - Bs {item['precio']} c/u = Bs {item['monto_final']}")
             total_general += item['monto_final']
-        print(f"TOTAL A PAGAR: ${total_general}")
-
+        print(f"TOTAL A PAGAR: Bs {total_general}")
 
 class PantallaInformacion(Screen):
     pass
@@ -200,14 +198,14 @@ class PantallaCarrito(Screen):
         item.cantidad = cantidad
         item.costo_unitario = precio
         item.ids.label_cantidad.text = str(cantidad)
-        item.ids.label_total.text = f"${precio * cantidad}"
+        item.ids.label_total.text = f"Bs {precio * cantidad}"
         self.ids.contenedor_items.add_widget(item)
 
     def actualizar_total_carrito(self):
         total = 0
         for item in self.ids.contenedor_items.children:
             total += item.cantidad * item.costo_unitario
-        self.ids.total_label.text = f"Total: ${total}"
+        self.ids.total_label.text = f"Total: Bs {total}"
         
 class GestorPantallas(ScreenManager):
     pass
