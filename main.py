@@ -6,11 +6,13 @@ from kivy.core.window import Window
 from kivy.core.text import LabelBase
 from kivy.uix.button import Button
 from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.behaviors import ButtonBehavior
 from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty, StringProperty
 from kivy.clock import Clock
 from kivy.utils import get_color_from_hex
 import requests # Asegúrate de tener requests instalado: pip install requests
+from kivy.uix.image import Image
+from kivy.animation import Animation
+
 
 def obtener_precio_dolar():
     try:
@@ -96,33 +98,58 @@ class PantallaInicio(Screen):
         self.manager.current = "login"
         self.ids.superusuario.opacity = 0
 
+class IconButton(ButtonBehavior, Image):
+    pass
+
 class CarritoItem(BoxLayout):
     cantidad = NumericProperty(1)
-    costo_unitario = NumericProperty(5000)
-    total = NumericProperty(5000)
+    producto = ObjectProperty(None)
+    total = NumericProperty(0)
 
     def actualizar_total(self):
-        self.total = self.cantidad * self.costo_unitario
-        self.ids.label_total.text = f"Bs {self.total}"
         app = App.get_running_app()
-        app.root.ids.carrito_screen.actualizar_total_carrito()
+        pantalla_recarga = app.root.get_screen("recarga")
 
-    def aumentar(self):
+        for item_carrito in pantalla_recarga.carrito:
+            if item_carrito['producto'] == self.producto:
+                item_carrito['cantidad'] = self.cantidad
+                item_carrito['monto_final'] = self.cantidad * self.producto.precio
+                break
+
+        self.ids.label_total.text = f"Bs {self.cantidad * self.producto.precio}"
+        app.root.get_screen("carrito").actualizar_total_carrito()
+
+    def aumentar_cantidad(self):
         self.cantidad += 1
         self.ids.label_cantidad.text = str(self.cantidad)
         self.actualizar_total()
 
-    def disminuir(self):
+    def disminuir_cantidad(self):
         if self.cantidad > 1:
             self.cantidad -= 1
             self.ids.label_cantidad.text = str(self.cantidad)
             self.actualizar_total()
 
+    def eliminar_producto(self):
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+
+        #Elimina el producto de la lista
+        pantalla_recarga.carrito = [
+            item for item in pantalla_recarga.carrito if item['producto'] != self.producto
+        ]
+
+        #Elimina el widget de la tabla
+        self.parent.remove_widget(self)
+        app.root.get_screen("carrito").actualizar_total_carrito()
+
+
+
 class PantallaRecarga(Screen):
     total_pagar = NumericProperty(0)
     cantidad = NumericProperty(1)
-    producto_seleccionado = NumericProperty(0)  # índice en PRODUCTS
-    carrito = ListProperty([])  # lista de dicts: {'producto': Product, 'cantidad': int}
+    producto_seleccionado = NumericProperty(0)
+    carrito = ListProperty([])
 
     def on_pre_enter(self):
         self.deseleccionar_todos()
@@ -134,7 +161,7 @@ class PantallaRecarga(Screen):
 
     def seleccionar_producto(self, index):
         self.producto_seleccionado = index
-        self.cantidad = 1  # reset cantidad al seleccionar producto
+        self.cantidad = 1
 
     def incrementar_cantidad(self):
         self.cantidad += 1
@@ -144,7 +171,6 @@ class PantallaRecarga(Screen):
             self.cantidad -= 1
 
     def agregar_al_carrito(self):
-        # Busca si ya existe el producto en el carrito
         for item in self.carrito:
             if item['producto'] == PRODUCTS[self.producto_seleccionado]:
                 item['cantidad'] += self.cantidad
@@ -157,10 +183,19 @@ class PantallaRecarga(Screen):
                 'precio': PRODUCTS[self.producto_seleccionado].precio,
                 'monto_final': self.cantidad * PRODUCTS[self.producto_seleccionado].precio
             })
+
         print("Carrito actual:", [
             (item['producto'].litros, item['cantidad'], item['precio'], item['monto_final'])
             for item in self.carrito
         ])
+
+        self.mostrar_popup()
+
+    def mostrar_popup(self):
+        popup = self.ids.popup_label
+        popup.opacity = 1
+        anim = Animation(opacity=0, duration=1)  
+        Clock.schedule_once(lambda dt: anim.start(popup), 1)  
 
     def continuar(self):
         total_general = 0
@@ -168,12 +203,15 @@ class PantallaRecarga(Screen):
         for item in self.carrito:
             print(f"{item['cantidad']} x {item['producto'].litros}L - Bs {item['precio']} c/u = Bs {item['monto_final']}")
             total_general += item['monto_final']
-        print(f"TOTAL A PAGAR: Bs {total_general}")
+        print(f"Bs {total_general}")
 
 class PantallaInformacion(Screen):
     pass
 
 class PantallaContacto(Screen):
+    pass
+
+class PantallaPago(Screen):
     pass
 
 class PantallaLogin(Screen):
@@ -185,34 +223,49 @@ class PantallaLogin(Screen):
             self.ids.etiqueta_status.text = "Contraseña incorrecta"
 
 class PantallaCarrito(Screen):
-    def on_enter(self):
+
+    def on_pre_enter(self):
+        self.actualizar_carrito()
+
+    #Limpia y recorre el carrito de PantallaRecarga para llenar la tabla
+    def actualizar_carrito(self):
         self.ids.contenedor_items.clear_widgets()
-        # Cargar ejemplos
-        self.agregar_item("Botellón 5L", 1, 5000)
-        self.agregar_item("Botellón 10L", 1, 10000)
+
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+        carrito = pantalla_recarga.carrito
+
+        for item in carrito:
+            descripcion = f"Botellón {item['producto'].litros}L"
+            cantidad = item['cantidad']
+            monto_total = item['monto_final']
+            self.agregar_item(item['producto'], descripcion, cantidad, monto_total)
+
         self.actualizar_total_carrito()
 
-    def agregar_item(self, descripcion, cantidad, precio):
+    def agregar_item(self, producto, descripcion, cantidad, monto_total):
         item = CarritoItem()
+        item.producto = producto  
         item.ids.label_descripcion.text = descripcion
         item.cantidad = cantidad
-        item.costo_unitario = precio
         item.ids.label_cantidad.text = str(cantidad)
-        item.ids.label_total.text = f"Bs {precio * cantidad}"
+        item.ids.label_total.text = f"{monto_total} Bs"
         self.ids.contenedor_items.add_widget(item)
 
     def actualizar_total_carrito(self):
-        total = 0
-        for item in self.ids.contenedor_items.children:
-            total += item.cantidad * item.costo_unitario
-        self.ids.total_label.text = f"Total: Bs {total}"
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+        total = sum([item['monto_final'] for item in pantalla_recarga.carrito])
+        self.ids.total_label.text = f" {total} Bs"
+
+
         
 class GestorPantallas(ScreenManager):
     pass
 
 class ExpendedoraApp(App):
     azul_oscuro = get_color_from_hex("#1F3F60")
-    PRODUCTS = PRODUCTS  # Esto hace accesible PRODUCTS como app.PRODUCTS
+    PRODUCTS = PRODUCTS  #Esto hace accesible PRODUCTS como app.PRODUCTS
     def build(self):
         return GestorPantallas()
 

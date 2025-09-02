@@ -102,7 +102,10 @@
         size: 50,  50
         pos_hint: {"center_x": 0.5, "center_y": 0.6}  # Centrado total para imagen
 
-
+<BotonPapelera@ButtonBehavior+Image>:
+    source: "images/papelera.png"
+    size_hint: None, None
+    size: 50, 50
 
 <MyRoundedButton@Button>:
     background_normal: ""
@@ -115,56 +118,78 @@
             size: self.size
             radius: [20,]
 
+<ButtonBehavior+Image>:
+    source: "images/papelera.png"
+    allow_stretch: True
+    keep_ratio: True
+
+
 <CarritoItem>:
     size_hint_y: None
-    height: 50
-    canvas.before:
-        Color:
-            rgba: app.azul_oscuro
-        Line:
-            width: 1.2
-            rectangle: self.x, self.y, self.width, self.height
+    height: 60
 
-    GridLayout:
-        cols: 4
-        spacing: 5
-        padding: 5
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        padding: [10,5]
 
         Label:
             id: label_descripcion
-            text: "Item"
-            font_size: 18
-            color: 0, 0, 0, 1
+            text: "Botellón X L"
+            font_name: 'Intro'
+            font_size: 22
+            color: 0,0,0,1
+            halign: "left"
+            valign: "middle"
+            text_size: (self.width, self.height)
+            size_hint_x: 0.35
 
+        # Contenedor de cantidad
         BoxLayout:
-            spacing: 2
-            Button:
-                text: "-"
-                size_hint_x: None
-                width: 40
-                on_press: root.disminuir()
+            orientation: 'horizontal'
+            spacing: 5
+            size_hint_x: 0.35
+
+            BotonOperacion:
+                img_src: "images/menos.png"
+                size_hint: None, None
+                size: 40, 40
+                on_press: root.disminuir_cantidad()
+
             Label:
                 id: label_cantidad
                 text: str(root.cantidad)
-                font_size: 18
-                color: 0, 0, 0, 1
-            Button:
-                text: "+"
-                size_hint_x: None
-                width: 40
-                on_press: root.aumentar()
+                font_name: 'Intro'
+                font_size: 22
+                color: 0,0,0,1
+                size_hint: None, None
+                size: 40, 40
+                halign: "center"
+                valign: "middle"
+                text_size: (self.width, self.height)
 
-        Label:
-            text: f"${root.costo_unitario}"
-            font_size: 18
-            color: 0, 0, 0, 1
-
+            BotonOperacion:
+                img_src: "images/mas.png"
+                size_hint: None, None
+                size: 40, 40
+                on_press: root.aumentar_cantidad()
         Label:
             id: label_total
-            text: f"${root.total}"
-            font_size: 18
-            color: 0, 0, 0, 1
+            text: f"Bs {root.total}"
+            font_name: 'Intro'
+            font_size: 22
+            color: 0,0,0,1
+            size_hint_x: 0.25
+            halign: "center"
+            valign: "middle"
+            text_size: (self.width, self.height)
             
+        BotonOperacion:
+            img_src: "images/papelera.png"
+            size_hint: None, None
+            size: 40, 40
+            on_press: root.eliminar_producto()
+         
 <GestorPantallas>:
     PantallaInicio:
     PantallaRecarga:
@@ -172,6 +197,7 @@
     PantallaContacto:
     PantallaLogin:
     PantallaCarrito:
+    PantallaPago:
 
 <PantallaInicio>:
     name: "inicio"
@@ -295,7 +321,7 @@
             size: 870, 70
             pos_hint: {"center_x": 0.5, "y": 0.32}
 
-            Widget:  # Columna 1 vacía
+            Widget:
 
             BotonOperacion:
                 img_src: "images/menos.png"
@@ -320,7 +346,7 @@
                 img_src: "images/mas.png"
                 on_press: root.incrementar_cantidad()
 
-            Widget:  # Columna 5 vacía
+            Widget:
         
         #BOTON AGREGAR
         GridLayout:
@@ -331,8 +357,8 @@
             size: 870, 70
             pos_hint: {"center_x": 0.5, "y": 0.18}
 
-            Widget:  # Columna 1 vacía
-            Widget:  # Columna 2 vacía
+            Widget:
+            Widget:
 
             Button:
                 text: "AÑADIR"
@@ -341,7 +367,7 @@
                 size_hint: None, None
                 size: 120, 60
                 background_normal: ""
-                background_color: 0, 0, 0, 0  # <-- Fondo completamente transparente
+                background_color: 0, 0, 0, 0
                 color: 1, 1, 1, 1
                 canvas.before:
                     Color:
@@ -350,13 +376,10 @@
                         pos: self.pos
                         size: self.size
                         radius: [15,]
-                # AQUI DEBO CREAR LA FUNCION PARA MANEJAR LA LISTA DEL CARRITO
                 on_press: root.agregar_al_carrito()
 
-
-            Widget:  # Columna 4 vacía
-            Widget:  # Columna 5 vacía
-        
+            Widget:
+            Widget:
         
         BotonVolver:
             pos_hint: {"x": 0.03, "y": 0.032}
@@ -381,10 +404,42 @@
         size_hint_y: None
         height: 50
         pos_hint: {'right': 0.95, 'y': 0.03}
-        on_press: root.continuar()
-        # Elimina el pos_hint aquí para que use el del BoxLayout
+        on_press: app.root.current = "carrito"
 
-        
+    #POPUP TEMPORAL (NOTIFICACION CARRITO)
+    FloatLayout:
+        size_hint: 1, 1
+        BoxLayout:
+            id: popup_label
+            size_hint: None, None
+            size: 400, 130
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            orientation: "vertical"
+            spacing: 5
+            padding: [20, 15]
+            opacity: 0
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.7
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [20,]
+
+            Image:
+                source: "images/check.png" 
+                size_hint: None, None
+                size: 40, 40
+                pos_hint: {"center_x": 0.5}
+
+            Label:
+                text: "¡Producto agregado al carrito!"
+                font_size: 20
+                font_name: 'Intro'
+                color: 1, 1, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
 
 <PantallaInformacion>:
     name: "informacion"
@@ -418,15 +473,8 @@
                 size_hint_y: None
                 height: self.texture_size[1]
 
-        Button:
-            text: "Volver"
-            font_name: 'Intro'
-            font_size: '20sp'
-            size_hint: (0.12, 0.08)
-            pos_hint: {"x": 0.02, "y": 0.02}
-            background_normal: ""
-            background_color: (0.121, 0.247, 0.376, 1)
-            color: (1, 1, 1, 1)
+        BotonVolver:
+            pos_hint: {"x": 0.03, "y": 0.032}
             on_press:
                 app.root.current = "inicio"
 
@@ -493,15 +541,8 @@
                 font_size: '20sp'
                 color: 0, 0, 0, 1
 
-        Button:
-            text: "Volver"
-            font_name: 'Intro'
-            font_size: '20sp'
-            size_hint: (0.12, 0.08)
-            pos_hint: {"x": 0.02, "y": 0.02}
-            background_normal: ""
-            background_color: (0.121, 0.247, 0.376, 1)
-            color: (1, 1, 1, 1)
+        BotonVolver:
+            pos_hint: {"x": 0.03, "y": 0.032}
             on_press:
                 app.root.current = "inicio"
          
@@ -569,66 +610,189 @@
             size_hint: None, None
             size: self.texture_size
 
-        Button:
-            text: "Volver"
-            font_name: 'Intro'
-            font_size: '20sp'
-            size_hint: (0.12, 0.08)
-            pos_hint: {"x": 0.02, "y": 0.02}
-            background_normal: ""
-            background_color: (0.121, 0.247, 0.376, 1)
-            color: (1, 1, 1, 1)
+        BotonVolver:
+            pos_hint: {"x": 0.03, "y": 0.032}
             on_press:
                 app.root.current = "inicio"
                 
 <PantallaCarrito>:
     name: "carrito"
     id: carrito_screen
+
     FloatLayout:
         canvas.before:
             Color:
                 rgba: 1, 1, 1, 1
             Rectangle:
+                source: "images/fondo.png"
                 pos: self.pos
                 size: self.size
 
+        # Título
         Label:
-            text: "Carrito de Recarga"
+            text: "CARRITO DE COMPRA"
+            font_name: 'Intro'
+            font_size: '28sp'
+            color: (0.110, 0.235, 0.392)
             size_hint: None, None
             size: self.texture_size
-            pos_hint: {"center_x": 0.5, "top": 0.95}
-            font_size: 26
-            color: 0, 0, 0, 1
+            pos_hint: {"center_x": 0.5, "top": 0.90}
 
+        #Contenedor principal
         BoxLayout:
             orientation: 'vertical'
-            size_hint: 0.95, 0.7
-            pos_hint: {"center_x": 0.5, "top": 0.85}
+            size_hint: None, None
+            size: self.parent.width * 0.5, self.parent.height * 0.6
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            padding: 5
+            spacing: 5
 
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [20,]  
+                Color:
+                    rgba: app.azul_oscuro
+                Line:
+                    width: 1.8
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, 20) 
+
+            #Encabezado de columnas
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: 30
+                spacing: 2
+                padding: [10,0,10,0]
+
+                Label:
+                    text: "PRODUCTO"
+                    font_name: 'Intro'
+                    font_size: '18sp'
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.5
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: "CANTIDAD"
+                    font_name: 'Intro'
+                    font_size: '18sp'
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.5
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: "MONTO"
+                    font_name: 'Intro'
+                    font_size: '18sp'
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.35
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: ""
+                    size_hint_x: 0.05
+            
+            #Divisor azul
+            BoxLayout:
+                size_hint_y: None
+                height: 2
+                canvas.before:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            # ScrollView con los CarritoItem
             ScrollView:
+                size_hint_y: 1
+                bar_width: 10
+                scroll_type: ['bars', 'content']
+                do_scroll_x: False  
+
                 GridLayout:
                     id: contenedor_items
                     cols: 1
-                    spacing: 10
+                    spacing: 5
+                    padding: [5,5]
                     size_hint_y: None
                     height: self.minimum_height
+                    size_hint_x: 1
+            
+            #Divisor azul entre items y total
+            BoxLayout:
+                size_hint_y: None
+                height: 2
+                canvas.before:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-        Label:
-            id: total_label
-            text: "Total: $0"
-            size_hint: None, None
-            size: self.texture_size
-            pos_hint: {"x": 0.05, "y": 0.02}
-            font_size: 20
-            color: 0, 0, 0, 1
+            BoxLayout:
+                size_hint_y: None
+                height: 40
+                padding: [10, 0, 10, 0]
+                spacing: 10
 
-        Button:
-            text: "Volver"
-            size_hint: None, None
-            size: 100, 40
-            pos_hint: {"right": 0.98, "y": 0.02}
-            on_press:
-                app.root.current = "recarga"
+                Label:
+                    text: "Total:"
+                    font_name: 'Intro'
+                    font_size: '18sp'
+                    color: 0, 0, 0, 1
+                    bold: True
+                    halign: "left"
+                    valign: "middle"
+                    size_hint_x: 0.7
+                    text_size: self.size
 
+                Label:
+                    id: total_label
+                    text: "$0"
+                    font_name: 'Intro'
+                    font_size: '18sp'
+                    color: 0, 0, 0, 1
+                    halign: "right"
+                    valign: "middle"
+                    size_hint_x: 0.3
+                    text_size: self.size
 
+        MyRoundedButton:
+            text: "PAGAR"
+            font_name: 'Intro'
+            font_size: '36sp'
+            size_hint: (0.25, 0.10)
+            pos_hint: {"center_x": 0.5, "y": 0.05}
+            color: (1, 1, 1, 1)
+            on_press: app.root.current = "pago"
 
+        # Botón volver
+        BotonVolver:
+            pos_hint: {"x": 0.03, "y": 0.032}
+            on_press: app.root.current = "recarga"
+
+<PantallaPago>:
+    name: "pago"
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # Blanco
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    FloatLayout:
+        
