@@ -3,21 +3,21 @@
 <BotonImagen@ButtonBehavior+Image>:
     source: ""
     size_hint: None, None
-    size: 40, 50
+    size: dp(40), dp(50)
 
 <BotonRecarga>:
     orientation: 'vertical'
-    spacing: 10
-    padding: [10, 20, 10, 10]
+    spacing: dp(10)
+    padding: [dp(10), dp(20), dp(10), dp(10)]
     size_hint: None, None
-    size: (150, 150)
+    size: (dp(150), dp(150))
     canvas.before:
         Color:
             rgba: 0.121, 0.247, 0.376, 1
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [15,]
+            radius: [dp(15),]
         Color:
             rgba: (0.137, 0.455, 0.796, 1) if self.seleccionado else (0, 0, 0, 0)
         Line:
@@ -26,12 +26,12 @@
     Image:
         source: root.img_src
         size_hint: None, None
-        size: 90,  90
+        size: dp(90), dp(90)  # Cambiado a dp
         pos_hint: {"center_x": 0.5, "top": 1}  # Centrado total para imagen
     Label:
         text: root.text_btn
         font_name: 'Intro'
-        font_size: '24sp'
+        font_size: sp(24)  # Cambiado a sp para texto
         color: (1, 1, 1, 1)
         size_hint_y: None
         height: self.texture_size[1]
@@ -41,9 +41,9 @@
 
 <BotonVolver@ButtonBehavior+BoxLayout>:
     orientation: 'horizontal'
-    spacing: 8
+    spacing: dp(8)  # Cambiado a dp
     size_hint: None, None
-    size: 120, 40
+    size: dp(120), dp(40)  # Cambiado a dp
     padding: 0
     canvas.before:
         Color:
@@ -54,20 +54,13 @@
     Image:
         source: "images/volver.png"
         size_hint: None, None
-        size: 50, 50
-    # Label:
-    #     text: "Volver"
-    #     font_name: 'Intro'
-    #     font_size: '20sp'
-    #     color: 0.121, 0.247, 0.376, 1
-    #     size_hint_y: None
-    #     height: 30
+        size: dp(50), dp(50)  # Cambiado a dp
 
 <BotonContinuar@ButtonBehavior+BoxLayout>:
     orientation: 'horizontal'
-    spacing: 8
+    spacing: dp(8)  # Cambiado a dp
     size_hint: None, None
-    size: 180, 50
+    size: dp(180), dp(50)  # Cambiado a dp
     padding: 0
     canvas.before:
         Color:
@@ -78,34 +71,34 @@
     Label:
         text: "Continuar"
         font_name: 'Intro'
-        font_size: '20sp'
+        font_size: sp(20)  # Cambiado a sp
         color: (0.110, 0.235, 0.392)
         size_hint_x: None
-        width: 140
+        width: dp(140)  # Cambiado a dp
         halign: "left"
         valign: "middle"
         text_size: self.size
     Image:
         source: "images/continuar.png"
         size_hint: None, None
-        size: 50, 50
+        size: dp(50), dp(50)  # Cambiado a dp
 
 <BotonOperacion>:
     orientation: 'vertical'
-    spacing: 10
-    padding: [10, 20, 10, 10]
+    spacing: dp(10)  # Cambiado a dp
+    padding: [dp(10), dp(20), dp(10), dp(10)]  # Cambiado a dp
     size_hint: None, None
-    size: (50, 50)
+    size: (dp(50), dp(50))  # Cambiado a dp
     Image:
         source: root.img_src
         size_hint: None, None
-        size: 50,  50
-        pos_hint: {"center_x": 0.5, "center_y": 0.6}  # Centrado total para imagen
+        size: dp(50), dp(50)  # Cambiado a dp
+        pos_hint: {"center_x": 0.5, "center_y": 0.6}
 
 <BotonPapelera@ButtonBehavior+Image>:
     source: "images/papelera.png"
     size_hint: None, None
-    size: 50, 50
+    size: dp(50), dp(50)  # Cambiado a dp
 
 <MyRoundedButton@Button>:
     background_normal: ""
@@ -116,7 +109,7 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [20,]
+            radius: [dp(20),]  # Cambiado a dp
 
 <ButtonBehavior+Image>:
     source: "images/papelera.png"
@@ -126,18 +119,18 @@
 
 <CarritoItem>:
     size_hint_y: None
-    height: 60
+    height: dp(60)  # Cambiado a dp
 
     BoxLayout:
         orientation: 'horizontal'
-        spacing: 10
-        padding: [10,5]
+        spacing: dp(10)  # Cambiado a dp
+        padding: [dp(10), dp(5)]  # Cambiado a dp
 
         Label:
             id: label_descripcion
             text: "Botellón X L"
             font_name: 'Intro'
-            font_size: 22
+            font_size: sp(22)  # Cambiado a sp
             color: 0,0,0,1
             halign: "left"
             valign: "middle"
@@ -147,23 +140,23 @@
         # Contenedor de cantidad
         BoxLayout:
             orientation: 'horizontal'
-            spacing: 5
+            spacing: dp(5)  # Cambiado a dp
             size_hint_x: 0.35
 
             BotonOperacion:
                 img_src: "images/menos.png"
                 size_hint: None, None
-                size: 40, 40
+                size: dp(40), dp(40)  # Cambiado a dp
                 on_press: root.disminuir_cantidad()
 
             Label:
                 id: label_cantidad
                 text: str(root.cantidad)
                 font_name: 'Intro'
-                font_size: 22
+                font_size: sp(22)  # Cambiado a sp
                 color: 0,0,0,1
                 size_hint: None, None
-                size: 40, 40
+                size: dp(40), dp(40)  # Cambiado a dp
                 halign: "center"
                 valign: "middle"
                 text_size: (self.width, self.height)
@@ -171,13 +164,14 @@
             BotonOperacion:
                 img_src: "images/mas.png"
                 size_hint: None, None
-                size: 40, 40
+                size: dp(40), dp(40)  # Cambiado a dp
                 on_press: root.aumentar_cantidad()
+                
         Label:
             id: label_total
             text: f"Bs {root.total}"
             font_name: 'Intro'
-            font_size: 22
+            font_size: sp(22)  # Cambiado a sp
             color: 0,0,0,1
             size_hint_x: 0.25
             halign: "center"
@@ -187,7 +181,7 @@
         BotonOperacion:
             img_src: "images/papelera.png"
             size_hint: None, None
-            size: 40, 40
+            size: dp(40), dp(40)  # Cambiado a dp
             on_press: root.eliminar_producto()
          
 <GestorPantallas>:
@@ -212,14 +206,14 @@
 
         Image:
             source: "images/logo-inicio.png"
-            size_hint: (0.8, 0.6)
+            size_hint: (0.8, 0.6)  # Ya está en proporciones relativas (correcto)
             pos_hint: {"center_x": 0.5, "top": 0.95}
 
         MyRoundedButton:
             text: "RECARGAR"
             font_name: 'Intro'
-            font_size: '36sp'
-            size_hint: (0.3, 0.15)
+            font_size: sp(36)  # Cambiado a sp
+            size_hint: (0.3, 0.15)  # Correcto (proporciones relativas)
             pos_hint: {"center_x": 0.5, "y": 0.2}
             color: (1, 1, 1, 1)
             on_press:
@@ -231,7 +225,6 @@
             pos_hint: {"right": 0.98, "top": 0.98}
             on_press: print("Superusuario")
             opacity: 0 #oculto al principio
-
 
         BotonImagen:
             source: "images/info.png"
@@ -258,7 +251,7 @@
         Label:
             text: "Seleccione la capacidad del botellón"
             font_name: 'Intro'
-            font_size: '26sp'
+            font_size: sp(26)  # Cambiado a sp
             color: (0.110, 0.235, 0.392)
             size_hint: None, None
             size: self.texture_size
@@ -267,7 +260,7 @@
         BotonImagen:
             id: carrito
             source: "images/carrito.png"
-            size: 90, 70
+            size: dp(90), dp(70)  # Cambiado a dp
             pos_hint: {"right": 0.98, "top": 0.98}
             on_press:
                 app.root.current = "carrito"
@@ -276,9 +269,9 @@
         GridLayout:
             id: grid_botones
             cols: 5
-            spacing: 30
+            spacing: dp(30)  # Cambiado a dp
             size_hint: None, None
-            size: 870, 150
+            size: dp(870), dp(150)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "center_y": 0.6}
             padding: 0
 
@@ -315,10 +308,10 @@
         # CONTROLES CANTIDAD
         GridLayout:
             cols: 5
-            spacing: 50
-            padding: 20
+            spacing: dp(50)  # Cambiado a dp
+            padding: dp(20)  # Cambiado a dp
             size_hint: None, None
-            size: 870, 70
+            size: dp(870), dp(70)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "y": 0.32}
 
             Widget:
@@ -330,9 +323,9 @@
             Label:
                 id: cantidad_label
                 text: str(root.cantidad)
-                font_size: 28
+                font_size: sp(28)  # Cambiado a sp
                 size_hint: None, None
-                size: 70, 60
+                size: dp(70), dp(60)  # Cambiado a dp
                 color: 0, 0, 0, 1
                 canvas.before:
                     Color:
@@ -340,7 +333,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15,]
+                        radius: [dp(15),]  # Cambiado a dp
 
             BotonOperacion:
                 img_src: "images/mas.png"
@@ -351,10 +344,10 @@
         #BOTON AGREGAR
         GridLayout:
             cols: 5
-            spacing: 50
-            padding: 20
+            spacing: dp(50)  # Cambiado a dp
+            padding: dp(20)  # Cambiado a dp
             size_hint: None, None
-            size: 870, 70
+            size: dp(870), dp(70)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "y": 0.18}
 
             Widget:
@@ -363,9 +356,9 @@
             Button:
                 text: "AÑADIR"
                 font_name: 'Intro'
-                font_size: 22
+                font_size: sp(22)  # Cambiado a sp
                 size_hint: None, None
-                size: 120, 60
+                size: dp(120), dp(60)  # Cambiado a dp
                 background_normal: ""
                 background_color: 0, 0, 0, 0
                 color: 1, 1, 1, 1
@@ -375,7 +368,7 @@
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [15,]
+                        radius: [dp(15),]  # Cambiado a dp
                 on_press: root.agregar_al_carrito()
 
             Widget:
@@ -388,21 +381,21 @@
     BoxLayout:
         orientation: 'vertical'
         size_hint: None, None
-        size: (300, 110)
+        size: (dp(300), dp(110))  # Cambiado a dp
         pos_hint: {'right': 0.65, 'y': 0.02}
-        spacing: 8
+        spacing: dp(8)  # Cambiado a dp
 
         Label:
             text: "Precio: ${} Bs".format(app.PRODUCTS[root.producto_seleccionado].precio)
             font_name: 'Intro'
-            font_size: '18sp'
+            font_size: sp(18)  # Cambiado a sp
             color: (1.0, 1.0, 1.0)
             size_hint_y: None
-            height: 40
+            height: dp(40)  # Cambiado a dp
 
     BotonContinuar:
         size_hint_y: None
-        height: 50
+        height: dp(50)  # Cambiado a dp
         pos_hint: {'right': 0.95, 'y': 0.03}
         on_press: app.root.current = "carrito"
 
@@ -412,11 +405,11 @@
         BoxLayout:
             id: popup_label
             size_hint: None, None
-            size: 400, 130
+            size: dp(400), dp(130)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             orientation: "vertical"
-            spacing: 5
-            padding: [20, 15]
+            spacing: dp(5)  # Cambiado a dp
+            padding: [dp(20), dp(15)]  # Cambiado a dp
             opacity: 0
             canvas.before:
                 Color:
@@ -424,22 +417,23 @@
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [20,]
+                    radius: [dp(20),]  # Cambiado a dp
 
             Image:
                 source: "images/check.png" 
                 size_hint: None, None
-                size: 40, 40
+                size: dp(40), dp(40)  # Cambiado a dp
                 pos_hint: {"center_x": 0.5}
 
             Label:
                 text: "¡Producto agregado al carrito!"
-                font_size: 20
+                font_size: sp(20)  # Cambiado a sp
                 font_name: 'Intro'
                 color: 1, 1, 1, 1
                 halign: "center"
                 valign: "middle"
                 text_size: self.size
+
 
 <PantallaInformacion>:
     name: "informacion"
@@ -454,7 +448,7 @@
         Image:
             source: "images/logo.png"
             size_hint: None, None
-            size: 120, 100
+            size: dp(120), dp(100)  # Cambiado a dp
             pos_hint: {"x": 0.02, "top": 0.98}
 
         BoxLayout:
@@ -465,7 +459,7 @@
             Label:
                 text: "Esta es una expendedora automatizada de agua.\nGracias por preferirnos."
                 font_name: 'Intro'
-                font_size: '24sp'
+                font_size: sp(24)  # Cambiado a sp
                 halign: "center" 
                 valign: "middle"
                 color: 0, 0, 0, 1
@@ -491,61 +485,62 @@
         Image:
             source: "images/logo.png"
             size_hint: None, None
-            size: 120, 100
+            size: dp(120), dp(100)  # Cambiado a dp
             pos_hint: {"x": 0.02, "top": 0.98}
 
         BoxLayout:
             orientation: "vertical"
-            spacing: 10
+            spacing: dp(10)  # Cambiado a dp
             size_hint: None, None
-            size: 400, 300
+            size: dp(400), dp(300)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
             Image:
                 source: "images/instagram.png"
                 size_hint_y: None
-                height: 50
+                height: dp(50)  # Cambiado a dp
             Label:
                 text: "Instagram: @example"
                 font_name: 'Intro'
-                font_size: '20sp'
+                font_size: sp(20)  # Cambiado a sp
                 color: 0, 0, 0, 1
 
             Image:
                 source: "images/correo.png"
                 size_hint_y: None
-                height: 50
+                height: dp(50)  # Cambiado a dp
             Label:
                 text: "Correo: example@example.com"
                 font_name: 'Intro'
-                font_size: '20sp'
+                font_size: sp(20)  # Cambiado a sp
                 color: 0, 0, 0, 1
 
             Image:
                 source: "images/telefono.png"
                 size_hint_y: None
-                height: 50
+                height: dp(50)  # Cambiado a dp
             Label:
                 text: "Teléfono: +1 234 567 890"
                 font_name: 'Intro'
-                font_size: '20sp'
+                font_size: sp(20)  # Cambiado a sp
                 color: 0, 0, 0, 1
 
             Image:
                 source: "images/whatsapp.png"
                 size_hint_y: None
-                height: 50
+                height: dp(50)  # Cambiado a dp
             Label:
                 text: "WhatsApp: +1 987 654 321"
                 font_name: 'Intro'
-                font_size: '20sp'
+                font_size: sp(20)  # Cambiado a sp
                 color: 0, 0, 0, 1
 
         BotonVolver:
             pos_hint: {"x": 0.03, "y": 0.032}
             on_press:
                 app.root.current = "inicio"
-         
+
+
 <PantallaLogin>:
     name: "login"
     FloatLayout:
@@ -559,21 +554,21 @@
         Image:
             source: "images/logo.png"
             size_hint: None, None
-            size: 120, 100
+            size: dp(120), dp(100)  # Cambiado a dp
             pos_hint: {"x": 0.02, "top": 0.98}
 
         Image:
             source: "images/superusuario.png"
             size_hint: None, None
-            size: 100, 100
+            size: dp(100), dp(100)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "top": 0.75}
 
         Label:
             text: "Modo Administrador"
             font_name: 'Intro'
-            font_size: '28sp'
+            font_size: sp(28)  # Cambiado a sp
             color: 0, 0, 0, 1
-            pos_hint: {"center_x": 0.5, "top": 0.55 }
+            pos_hint: {"center_x": 0.5, "top": 0.55}
             size_hint: None, None
             size: self.texture_size
 
@@ -582,18 +577,18 @@
             password: True
             hint_text: "Contraseña"
             size_hint: None, None
-            size: 300, 50
+            size: dp(300), dp(50)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "center_y": 0.42}
             font_name: 'Intro'
-            font_size: '22sp'
+            font_size: sp(22)  # Cambiado a sp
             multiline: False
 
         Button:
             text: "Ingresar"
             font_name: 'Intro'
-            font_size: '22sp'
+            font_size: sp(22)  # Cambiado a sp
             size_hint: None, None
-            size: 300, 50
+            size: dp(300), dp(50)  # Cambiado a dp
             pos_hint: {"center_x": 0.5, "center_y": 0.32}
             background_normal: ""
             background_color: (0.121, 0.247, 0.376, 1)
@@ -604,7 +599,7 @@
             id: etiqueta_status
             text: ""
             font_name: 'Intro'
-            font_size: '18sp'
+            font_size: sp(18)  # Cambiado a sp
             color: (1, 0, 0, 1)
             pos_hint: {"center_x": 0.5, "center_y": 0.18}
             size_hint: None, None
@@ -614,7 +609,8 @@
             pos_hint: {"x": 0.03, "y": 0.032}
             on_press:
                 app.root.current = "inicio"
-                
+
+
 <PantallaCarrito>:
     name: "carrito"
     id: carrito_screen
@@ -632,7 +628,7 @@
         Label:
             text: "CARRITO DE COMPRA"
             font_name: 'Intro'
-            font_size: '28sp'
+            font_size: sp(28)  # Cambiado a sp
             color: (0.110, 0.235, 0.392)
             size_hint: None, None
             size: self.texture_size
@@ -644,8 +640,8 @@
             size_hint: None, None
             size: self.parent.width * 0.5, self.parent.height * 0.6
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            padding: 5
-            spacing: 5
+            padding: dp(5)  # Cambiado a dp
+            spacing: dp(5)  # Cambiado a dp
 
             canvas.before:
                 Color:
@@ -653,25 +649,25 @@
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [20,]  
+                    radius: [dp(20),]  # Cambiado a dp
                 Color:
                     rgba: app.azul_oscuro
                 Line:
-                    width: 1.8
-                    rounded_rectangle: (self.x, self.y, self.width, self.height, 20) 
+                    width: dp(1.8)  # Cambiado a dp
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))  # Cambiado a dp
 
             #Encabezado de columnas
             BoxLayout:
                 orientation: 'horizontal'
                 size_hint_y: None
-                height: 30
-                spacing: 2
-                padding: [10,0,10,0]
+                height: dp(30)  # Cambiado a dp
+                spacing: dp(2)  # Cambiado a dp
+                padding: [dp(10), 0, dp(10), 0]  # Cambiado a dp
 
                 Label:
                     text: "PRODUCTO"
                     font_name: 'Intro'
-                    font_size: '18sp'
+                    font_size: sp(18)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     size_hint_x: 0.5
@@ -682,7 +678,7 @@
                 Label:
                     text: "CANTIDAD"
                     font_name: 'Intro'
-                    font_size: '18sp'
+                    font_size: sp(18)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     size_hint_x: 0.5
@@ -693,7 +689,7 @@
                 Label:
                     text: "MONTO"
                     font_name: 'Intro'
-                    font_size: '18sp'
+                    font_size: sp(18)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     size_hint_x: 0.35
@@ -708,7 +704,7 @@
             #Divisor azul
             BoxLayout:
                 size_hint_y: None
-                height: 2
+                height: dp(2)  # Cambiado a dp
                 canvas.before:
                     Color:
                         rgba: app.azul_oscuro
@@ -719,15 +715,15 @@
             # ScrollView con los CarritoItem
             ScrollView:
                 size_hint_y: 1
-                bar_width: 10
+                bar_width: dp(10)  # Cambiado a dp
                 scroll_type: ['bars', 'content']
                 do_scroll_x: False  
 
                 GridLayout:
                     id: contenedor_items
                     cols: 1
-                    spacing: 5
-                    padding: [5,5]
+                    spacing: dp(5)  # Cambiado a dp
+                    padding: [dp(5), dp(5)]  # Cambiado a dp
                     size_hint_y: None
                     height: self.minimum_height
                     size_hint_x: 1
@@ -735,7 +731,7 @@
             #Divisor azul entre items y total
             BoxLayout:
                 size_hint_y: None
-                height: 2
+                height: dp(2)  # Cambiado a dp
                 canvas.before:
                     Color:
                         rgba: app.azul_oscuro
@@ -745,14 +741,14 @@
 
             BoxLayout:
                 size_hint_y: None
-                height: 40
-                padding: [10, 0, 10, 0]
-                spacing: 10
+                height: dp(40)  # Cambiado a dp
+                padding: [dp(10), 0, dp(10), 0]  # Cambiado a dp
+                spacing: dp(10)  # Cambiado a dp
 
                 Label:
                     text: "Total:"
                     font_name: 'Intro'
-                    font_size: '18sp'
+                    font_size: sp(18)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     halign: "left"
@@ -764,7 +760,7 @@
                     id: total_label
                     text: "$0"
                     font_name: 'Intro'
-                    font_size: '18sp'
+                    font_size: sp(18)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     halign: "right"
                     valign: "middle"
@@ -774,7 +770,7 @@
         MyRoundedButton:
             text: "PAGAR"
             font_name: 'Intro'
-            font_size: '36sp'
+            font_size: sp(36)  # Cambiado a sp
             size_hint: (0.25, 0.10)
             pos_hint: {"center_x": 0.5, "y": 0.05}
             color: (1, 1, 1, 1)
@@ -785,6 +781,7 @@
             pos_hint: {"x": 0.03, "y": 0.032}
             on_press: app.root.current = "recarga"
 
+            
 <PantallaPago>:
     name: "pago"
     canvas.before:

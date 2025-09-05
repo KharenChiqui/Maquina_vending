@@ -13,6 +13,12 @@ import requests # Asegúrate de tener requests instalado: pip install requests
 from kivy.uix.image import Image
 from kivy.animation import Animation
 
+from kivy.config import Config
+Config.set('graphics', 'width', '1024')
+Config.set('graphics', 'height', '600')
+Config.set('graphics', 'resizable', '0')  # Esto es importante para evitar redimensionamiento de la ventana 
+from kivy.core.window import Window
+
 
 def obtener_precio_dolar():
     try:
