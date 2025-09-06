@@ -95,6 +95,19 @@
         size: dp(50), dp(50)  # Cambiado a dp
         pos_hint: {"center_x": 0.5, "center_y": 0.6}
 
+<BotonOperacion2>:
+    orientation: 'vertical'
+    spacing: dp(6)
+    padding: [dp(6), dp(12), dp(6), dp(6)]
+    size_hint: None, None
+    size: (dp(32), dp(32))
+    Image:
+        source: root.img_src
+        size_hint: None, None
+        size: dp(35), dp(35)
+        pos_hint: {"center_x": 0.5, "center_y": 0.6}
+
+
 <BotonPapelera@ButtonBehavior+Image>:
     source: "images/papelera.png"
     size_hint: None, None
@@ -128,9 +141,9 @@
 
         Label:
             id: label_descripcion
-            text: "Botellón X L"
+            text: "Botellón - X L"
             font_name: 'Intro'
-            font_size: sp(22)  # Cambiado a sp
+            font_size: sp(18)  # Cambiado a sp
             color: 0,0,0,1
             halign: "left"
             valign: "middle"
@@ -141,19 +154,18 @@
         BoxLayout:
             orientation: 'horizontal'
             spacing: dp(5)  # Cambiado a dp
-            size_hint_x: 0.35
+            size_hint_x: 0.23
 
-            BotonOperacion:
+            BotonOperacion2:
                 img_src: "images/menos.png"
-                size_hint: None, None
-                size: dp(40), dp(40)  # Cambiado a dp
-                on_press: root.disminuir_cantidad()
+                size: dp(40), dp(40)
+                on_press: root.decrementar_cantidad()
 
             Label:
                 id: label_cantidad
                 text: str(root.cantidad)
                 font_name: 'Intro'
-                font_size: sp(22)  # Cambiado a sp
+                font_size: sp(20)  # Cambiado a sp
                 color: 0,0,0,1
                 size_hint: None, None
                 size: dp(40), dp(40)  # Cambiado a dp
@@ -161,24 +173,25 @@
                 valign: "middle"
                 text_size: (self.width, self.height)
 
-            BotonOperacion:
+            BotonOperacion2:
                 img_src: "images/mas.png"
-                size_hint: None, None
-                size: dp(40), dp(40)  # Cambiado a dp
+                size: dp(40), dp(40)
                 on_press: root.aumentar_cantidad()
                 
         Label:
             id: label_total
             text: f"Bs {root.total}"
             font_name: 'Intro'
-            font_size: sp(22)  # Cambiado a sp
+            font_size: sp(20)
             color: 0,0,0,1
-            size_hint_x: 0.25
+            size_hint_x: 0.30
+            size_hint_y: None
+            height: dp(40)
             halign: "center"
             valign: "middle"
-            text_size: (self.width, self.height)
+            text_size: self.size
             
-        BotonOperacion:
+        BotonOperacion2:
             img_src: "images/papelera.png"
             size_hint: None, None
             size: dp(40), dp(40)  # Cambiado a dp
@@ -400,7 +413,7 @@
             color: 1, 1, 1, 1
             canvas.before:
                 Color:
-                    rgba: 0.121, 0.247, 0.376, 1
+                    rgba: rgba(151,2,2,255) # #971202
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -461,7 +474,7 @@
             opacity: 0
             canvas.before:
                 Color:
-                    rgba: 0, 0, 0, 0.7
+                    rgba: 0.118, 0.518, 0.286, 0.7
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -686,7 +699,7 @@
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
-            size: self.parent.width * 0.5, self.parent.height * 0.6
+            size: self.parent.width * 0.6, self.parent.height * 0.65
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
             padding: dp(5)  # Cambiado a dp
             spacing: dp(5)  # Cambiado a dp
@@ -715,7 +728,7 @@
                 Label:
                     text: "PRODUCTO"
                     font_name: 'Intro'
-                    font_size: sp(18)  # Cambiado a sp
+                    font_size: sp(20)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     size_hint_x: 0.5
@@ -726,10 +739,10 @@
                 Label:
                     text: "CANTIDAD"
                     font_name: 'Intro'
-                    font_size: sp(18)  # Cambiado a sp
+                    font_size: sp(20)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
-                    size_hint_x: 0.5
+                    size_hint_x: 0.45
                     halign: "left"
                     valign: "middle"
                     text_size: self.size
@@ -737,7 +750,7 @@
                 Label:
                     text: "MONTO"
                     font_name: 'Intro'
-                    font_size: sp(18)  # Cambiado a sp
+                    font_size: sp(20)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     size_hint_x: 0.35
@@ -796,7 +809,7 @@
                 Label:
                     text: "Total:"
                     font_name: 'Intro'
-                    font_size: sp(18)  # Cambiado a sp
+                    font_size: sp(20)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     bold: True
                     halign: "left"
@@ -808,25 +821,62 @@
                     id: total_label
                     text: "$0"
                     font_name: 'Intro'
-                    font_size: sp(18)  # Cambiado a sp
+                    font_size: sp(20)  # Cambiado a sp
                     color: 0, 0, 0, 1
                     halign: "right"
                     valign: "middle"
                     size_hint_x: 0.3
                     text_size: self.size
 
-        MyRoundedButton:
+        # MyRoundedButton:
+        #     text: "PAGAR"
+        #     font_name: 'Intro'
+        #     font_size: sp(36)  # Cambiado a sp
+        #     size_hint: (0.25, 0.10)
+        #     pos_hint: {"center_x": 0.5, "y": 0.05}
+        #     color: (1, 1, 1, 1)
+        #     on_press: app.root.current = "pago"
+
+        Button:
             text: "PAGAR"
             font_name: 'Intro'
             font_size: sp(36)  # Cambiado a sp
             size_hint: (0.25, 0.10)
             pos_hint: {"center_x": 0.5, "y": 0.05}
-            color: (1, 1, 1, 1)
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: 0.118, 0.518, 0.286, 1 #1E8449
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]  # Cambiado a dp
             on_press: app.root.current = "pago"
 
         # Botón volver
-        BotonVolver:
+        # BotonVolver:
+        #     pos_hint: {"x": 0.03, "y": 0.032}
+        #     on_press: app.root.current = "recarga"
+
+        Button:
+            text: "REGRESAR"
+            font_name: 'Intro'
+            font_size: sp(18)  # Cambiado a sp
+            size_hint: None, None
+            size: dp(150), dp(50)  # Cambiado a dp
             pos_hint: {"x": 0.03, "y": 0.032}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: rgba(151,2,2,255) # #971202
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]  # Cambiado a dp
             on_press: app.root.current = "recarga"
 
             

@@ -79,6 +79,11 @@ class BotonOperacion(ButtonBehavior, RelativeLayout):
     img_src = StringProperty("")
     icono = StringProperty("")
 
+class BotonOperacion2(ButtonBehavior, RelativeLayout):
+    color_fondo = ListProperty([1, 10, 10, 1])
+    img_src = StringProperty("")
+    icono = StringProperty("")
+
 class PantallaInicio(Screen):
     tiempo_presionado = NumericProperty(0)
 
@@ -130,7 +135,7 @@ class CarritoItem(BoxLayout):
         self.ids.label_cantidad.text = str(self.cantidad)
         self.actualizar_total()
 
-    def disminuir_cantidad(self):
+    def decrementar_cantidad(self):
         if self.cantidad > 1:
             self.cantidad -= 1
             self.ids.label_cantidad.text = str(self.cantidad)
@@ -232,6 +237,13 @@ class PantallaCarrito(Screen):
 
     def on_pre_enter(self):
         self.actualizar_carrito()
+
+    def incrementar_cantidad(self):
+        self.cantidad += 1
+
+    def decrementar_cantidad(self):
+        if self.cantidad > 1:
+            self.cantidad -= 1
 
     #Limpia y recorre el carrito de PantallaRecarga para llenar la tabla
     def actualizar_carrito(self):
