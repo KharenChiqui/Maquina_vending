@@ -3,14 +3,14 @@
 <BotonImagen@ButtonBehavior+Image>:
     source: ""
     size_hint: None, None
-    size: dp(40), dp(50)
+    size: dp(60), dp(50)
 
 <BotonRecarga>:
     orientation: 'vertical'
     spacing: dp(10)
     padding: [dp(10), dp(20), dp(10), dp(10)]
     size_hint: None, None
-    size: (dp(150), dp(150))
+    size: (dp(155), dp(155))
     canvas.before:
         Color:
             rgba: 0.121, 0.247, 0.376, 1
@@ -31,7 +31,7 @@
     Label:
         text: root.text_btn
         font_name: 'Intro'
-        font_size: sp(24)  # Cambiado a sp para texto
+        font_size: sp(22)  # Cambiado a sp para texto
         color: (1, 1, 1, 1)
         size_hint_y: None
         height: self.texture_size[1]
@@ -255,7 +255,7 @@
             color: (0.110, 0.235, 0.392)
             size_hint: None, None
             size: self.texture_size
-            pos_hint: {"center_x": 0.5, "top": 0.85}
+            pos_hint: {"center_x": 0.5, "center_y": 0.85}
 
         BotonImagen:
             id: carrito
@@ -271,8 +271,8 @@
             cols: 5
             spacing: dp(30)  # Cambiado a dp
             size_hint: None, None
-            size: dp(870), dp(150)  # Cambiado a dp
-            pos_hint: {"center_x": 0.5, "center_y": 0.6}
+            size: dp(900), dp(150)  # Cambiado a dp
+            pos_hint: {"center_x": 0.5, "center_y": 0.66}
             padding: 0
 
             BotonRecarga:
@@ -305,6 +305,16 @@
                 pantalla_recarga: root
                 on_press: root.seleccionar_producto(0)
         
+        Label:
+            text: "Indique la cantidad a recargar"
+            font_name: 'Intro'
+            font_size: sp(26)  # Cambiado a sp
+            color: (0.110, 0.235, 0.392)
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.46}
+        
+        
         # CONTROLES CANTIDAD
         GridLayout:
             cols: 5
@@ -312,7 +322,7 @@
             padding: dp(20)  # Cambiado a dp
             size_hint: None, None
             size: dp(870), dp(70)  # Cambiado a dp
-            pos_hint: {"center_x": 0.5, "y": 0.32}
+            pos_hint: {"center_x": 0.5, "y": 0.29}
 
             Widget:
 
@@ -348,7 +358,7 @@
             padding: dp(20)  # Cambiado a dp
             size_hint: None, None
             size: dp(870), dp(70)  # Cambiado a dp
-            pos_hint: {"center_x": 0.5, "y": 0.18}
+            pos_hint: {"center_x": 0.5, "y": 0.15}
 
             Widget:
             Widget:
@@ -358,7 +368,7 @@
                 font_name: 'Intro'
                 font_size: sp(22)  # Cambiado a sp
                 size_hint: None, None
-                size: dp(120), dp(60)  # Cambiado a dp
+                size: dp(150), dp(65)  # Cambiado a dp
                 background_normal: ""
                 background_color: 0, 0, 0, 0
                 color: 1, 1, 1, 1
@@ -374,8 +384,27 @@
             Widget:
             Widget:
         
-        BotonVolver:
-            pos_hint: {"x": 0.03, "y": 0.032}
+        # BotonVolver:
+        #     pos_hint: {"x": 0.03, "y": 0.032}
+        #     on_press: app.root.current = "inicio"
+
+        Button:
+            text: "REGRESAR"
+            font_name: 'Intro'
+            font_size: sp(22)  # Cambiado a sp
+            size_hint: None, None
+            size: dp(200), dp(65)  # Cambiado a dp
+            pos_hint: {"x": 0.045, "y": 0.030}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: 0.121, 0.247, 0.376, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]  # Cambiado a dp
             on_press: app.root.current = "inicio"
 
     BoxLayout:
@@ -393,10 +422,29 @@
             size_hint_y: None
             height: dp(40)  # Cambiado a dp
 
-    BotonContinuar:
-        size_hint_y: None
-        height: dp(50)  # Cambiado a dp
+    # BotonContinuar:
+    #     size_hint_y: None
+    #     height: dp(50)  # Cambiado a dp
+    #     pos_hint: {'right': 0.95, 'y': 0.03}
+    #     on_press: app.root.current = "carrito"
+
+    Button:
+        text: "CONTINUAR"
+        font_name: 'Intro'
+        font_size: sp(22)  # Cambiado a sp
+        size_hint: None, None
+        size: dp(200), dp(65)  # Cambiado a dp
         pos_hint: {'right': 0.95, 'y': 0.03}
+        background_normal: ""
+        background_color: 0, 0, 0, 0
+        color: 1, 1, 1, 1
+        canvas.before:
+            Color:
+                rgba: 0.118, 0.518, 0.286, 1 #1E8449
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(15),]  # Cambiado a dp
         on_press: app.root.current = "carrito"
 
     #POPUP TEMPORAL (NOTIFICACION CARRITO)
