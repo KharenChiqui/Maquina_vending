@@ -1,0 +1,179 @@
+📊 1. Tabla: users (Usuarios del sistema)
+¿Qué guarda? Todos los usuarios de la aplicación: dueños de máquinas, clientes y administradores.
+
+Ejemplo de datos:
+
+python
+{
+    'id': 1,
+    'first_name': 'María',
+    'last_name': 'García',
+    'email': 'maria@empresa.com',
+    'password': 'hashed_password_123',
+    'role': 'owner',  # Puede ser: owner, client, admin
+    'phone': '+584123456789',
+    'city': 'Caracas',
+    'gender': 'female',
+    'status': 'active'
+}
+Cómo funciona: Cada usuario tiene un rol que define sus permisos. Los owners son dueños de máquinas, los clients son clientes que compran agua, y los admins gestionan el sistema.
+
+
+
+
+🏭 2. Tabla: machines (Máquinas dispensadoras)
+¿Qué guarda? Las máquinas de agua purificada con su estado, capacidad y filtros.
+
+Ejemplo de datos:
+
+python
+{
+    'id': 1,
+    'user_id': 1,  # Dueño de la máquina
+    'name': 'Máquina Centro',
+    'location': 'Plaza Bolívar',
+    'status': 'active',  # available, active, inactive
+    'max_water': 1000.0,  # Capacidad total en litros
+    'current_level': 750.5,  # Nivel actual
+    'price': 0.50,  # Precio por litro
+    'filter_active_carbon': 85.0,  # % de vida del filtro
+    'filter_sand_and_gravel': 90.0,
+    # ... otros filtros
+}
+Cómo funciona: Cada máquina pertenece a un usuario (owner) y tiene un estado que indica si está disponible, activa o inactiva.
+
+
+
+
+
+💳 3. Tabla: payments (Pagos y recargas)
+¿Qué guarda? Transacciones de dinero: pagos por agua y recargas de saldo.
+
+Ejemplo de datos:
+
+python
+{
+    'id': 1,
+    'user_id': 2,  # Cliente que paga
+    'date': '2024-01-15 10:30:00',
+    'payment_method': 'card',  # bank_transfer, cash, card
+    'amount': 45.50,  # Monto total de la transacción
+    'recharge': 36.00,  # Cuánto se recargó al saldo
+    'bank': 'Mercantil',
+    'reference_code': 'CARD-789012'
+}
+Cómo funciona: Los clientes hacen pagos que pueden incluir compra de agua inmediata Y/O recarga de saldo para compras futuras.
+
+
+
+
+
+
+🛒 4. Tabla: sales (Ventas de agua)
+¿Qué guarda? Cada venta específica de agua, vinculada a un pago y una máquina.
+
+Ejemplo de datos:
+
+python
+{
+    'id': 1,
+    'payment_id': 1,  # Pago asociado
+    'user_id': 2,  # Cliente que compró
+    'machine_id': 1,  # Máquina donde se compró
+    'date': '2024-01-15 10:30:00',
+    'product': 'Botellón 19L',
+    'price': 2.50,  # Precio por unidad
+    'quantity': 3,   # Cantidad comprada
+    'subtotal': 7.50  # price * quantity
+}
+Cómo funciona: Cada vez que un cliente compra agua, se crea un registro aquí. Un pago puede tener múltiples sales (ej: compra de diferentes productos).
+
+
+
+
+
+
+
+💧 5. Tabla: water_consumption_history (Historial de consumo)
+¿Qué guarda? El balance de agua: consumo, recargas y saldo disponible.
+
+Ejemplo de datos:
+
+python
+{
+    'id': 1,
+    'date': '2024-01-15 10:30:00',
+    'consumption': 57.0,  # Litros consumidos
+    'recharge': 100.0,   # Litros recargados
+    'balance': 543.0     # Saldo disponible
+}
+Cómo funciona: Lleva el control de cuánta agua se consume, cuánta se recarga y cuál es el balance disponible en el sistema.
+
+🎯 EJEMPLO COMPLETO: Cómo funcionan juntas
+Escenario: María (owner) tiene una máquina. Carlos (client) quiere comprar agua.
+
+Paso 1: Carlos hace un pago
+python
+# Tabla payments
+{
+    'user_id': 2,  # Carlos
+    'amount': 45.50,
+    'recharge': 36.00,  # Recarga su saldo
+    'payment_method': 'card'
+}
+Paso 2: Carlos compra agua
+python
+# Tabla sales (vinculada al pago anterior)
+{
+    'payment_id': 1,
+    'user_id': 2,      # Carlos
+    'machine_id': 1,   # Máquina de María
+    'product': 'Botellón 19L',
+    'quantity': 3,
+    'price': 2.50,
+    'subtotal': 7.50   # 3 * 2.50
+}
+Paso 3: Se actualiza el consumo
+python
+# Tabla water_consumption_history
+{
+    'consumption': 57.0,  # 3 botellones de 19L = 57 litros
+    'recharge': 100.0,    # María recargó la máquina
+    'balance': 1043.0     # Nuevo saldo
+}
+
+
+
+
+
+🔄 RELACIONES ENTRE TABLAS
+text
+users (owners) → machines (sus máquinas)
+users (clients) → payments (sus pagos)
+payments → sales (qué se compró con ese pago)
+sales → machines (dónde se compró)
+water_consumption → (control general de agua)
+💡 Preguntas comunes:
+¿Dónde veo cuántos botellones vendió María?
+
+python
+# Buscar todas las sales de las máquinas de María
+sales = get_sales_by_machine(machine_id)  # donde machine pertenece a María
+¿Cómo sé cuánto dinero ha ganado María?
+
+python
+# Sumar todos los pagos asociados a sales de sus máquinas
+# (Requiere una consulta que una payments + sales + machines)
+¿Cómo controlo el inventario de agua?
+
+python
+# Ver el balance actual
+balance = get_current_balance()
+
+# Ver consumo histórico
+history = get_water_consumption_by_date_range('2024-01-01', '2024-01-31')
+¿Cómo sé cuándo cambiar los filtros?
+
+python
+# Ver máquinas con filtros bajos
+low_filter_machines = get_machines_with_low_filters(30.0)  # < 30%
