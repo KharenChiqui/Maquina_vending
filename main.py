@@ -18,6 +18,8 @@ Config.set('graphics', 'width', '1024')
 Config.set('graphics', 'height', '600')
 Config.set('graphics', 'resizable', '0')  # Esto es importante para evitar redimensionamiento de la ventana 
 from kivy.core.window import Window
+from bd_funciones import insertar_usuario
+from bd_funciones  import insertar_maquina
 
 
 def obtener_precio_dolar():
@@ -38,6 +40,50 @@ LabelBase.register(name='Intro', fn_regular='fonts/Intro.otf')
 
 PRECIO_LITRO = 1000
 SUPERUSER_PASSWORD = "aguaSegura24"
+
+#def test_insercion():
+    #print("Iniciando prueba de inserción...")
+    
+    # Datos de prueba
+    #resultado = insertar_usuario(
+       # "Juan", 
+        #"Pérez", 
+        #"juan@perez.com", 
+        #"secreto123", 
+        #"admin", 
+        #"123456789", 
+        #"Madrid", 
+        #"male"
+    #)
+
+
+
+    #if resultado:
+        #print("✅ Prueba exitosa: Usuario insertado correctamente.")
+    #else:
+        #print("❌ Error: No se pudo insertar el usuario.")
+
+def prueba_sistema():
+    # Simulamos que el usuario que creamos tiene el ID 1
+    user_id_creado = 1 
+    
+    resultado = insertar_maquina(
+        user_id=user_id_creado,
+        name='Máquina Central',
+        location='Plaza Principal',
+        status='available',
+        max_water=1000.0,
+        current_level=750.5,
+        price=0.50,
+        filter_ac=85.0,
+        filter_sg=90.0,
+        filter_zeo=78.0,
+        filter_rom=92.0,
+        filter_ml=88.0
+    )
+
+    if resultado:
+        print("Sistema de máquina listo.")
 
 class Product:
     def __init__(self, litros, precio):
@@ -153,7 +199,6 @@ class CarritoItem(BoxLayout):
         #Elimina el widget de la tabla
         self.parent.remove_widget(self)
         app.root.get_screen("carrito").actualizar_total_carrito()
-
 
 
 class PantallaRecarga(Screen):
@@ -290,3 +335,5 @@ class ExpendedoraApp(App):
 
 if __name__ == '__main__':
     ExpendedoraApp().run()
+    #test_insercion()
+    prueba_sistema()
