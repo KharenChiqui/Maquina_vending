@@ -17,10 +17,133 @@ from kivy.config import Config
 Config.set('graphics', 'width', '1024')
 Config.set('graphics', 'height', '600')
 Config.set('graphics', 'resizable', '0')  # Esto es importante para evitar redimensionamiento de la ventana 
-from kivy.core.window import Window
 from bd_funciones import insertar_usuario
 from bd_funciones  import insertar_maquina
+from bd_funciones import registrar_pago_y_ventas
+from datetime import datetime
 
+
+class CarritoItemPago(BoxLayout):
+    pass
+
+
+class PantallaPago(Screen):
+    total = NumericProperty(0)
+
+    def on_kv_post(self, base_widget):
+        spinner = self.ids.spinner_pago
+        self.reset_inputs()
+
+    def reset_inputs(self):
+        self.ids.input_cedula_tarjeta.text = ""
+        self.ids.input_contrasena.text = ""
+        self.ids.input_cedula_transferencia.text = ""
+        self.ids.input_referencia.text = ""
+
+
+    def on_metodo_pago(self, metodo):
+
+        self.ids.input_cedula_tarjeta.text = ""
+        self.ids.input_contrasena.text = ""
+        self.ids.input_cedula_transferencia.text = ""
+        self.ids.input_referencia.text = ""
+
+
+        self.ids.box_tarjeta.opacity = 0
+        self.ids.box_tarjeta.disabled = True
+        self.ids.box_tarjeta.height = 0
+
+        self.ids.box_transferencia.opacity = 0
+        self.ids.box_transferencia.disabled = True
+        self.ids.box_transferencia.height = 0
+
+        if metodo == "Tarjeta":
+            self.ids.box_tarjeta.opacity = 1
+            self.ids.box_tarjeta.disabled = False
+            self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
+
+        elif metodo == "Transferencia bancaria":
+            self.ids.box_transferencia.opacity = 1
+            self.ids.box_transferencia.disabled = False
+            self.ids.box_transferencia.height = self.ids.box_transferencia.minimum_height
+
+
+    def on_pre_enter(self):
+        self.cargar_carrito()
+
+    def cargar_carrito(self):
+        self.ids.contenedor_items.clear_widgets()
+
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+        carrito = pantalla_recarga.carrito
+
+        self.total = sum(item['monto_final'] for item in carrito)
+        self.ids.total_label.text = f"{self.total} Bs"
+
+        for item in carrito:
+            widget = CarritoItemPago()
+            widget.ids.label_descripcion.text = f"Botellón {item['producto'].litros}L"
+            widget.ids.label_cantidad.text = str(item['cantidad'])
+            widget.ids.label_total.text = f"{item['monto_final']} Bs"
+            self.ids.contenedor_items.add_widget(widget)
+
+    def confirmar_pago(self):
+        print("CONFIRMAR PAGO EJECUTADO")
+
+        metodo_ui = self.ids.spinner_pago.text
+        cedula = self.ids.input_cedula_tarjeta.text.strip()
+        if not cedula:
+            cedula = self.ids.input_cedula_transferencia.text.strip()
+            if not cedula:
+                if not metodo_ui == "Efectivo":
+                    print("Debe ingresar la cédula")
+                    return
+
+        mapa_metodos = {
+            "Efectivo": "cash",
+            "Transferencia bancaria": "bank_transfer",
+            "Tarjeta": "card"
+        }
+
+        payment_method = mapa_metodos.get(metodo_ui)
+
+        if not payment_method:
+            print("Debe seleccionar un método de pago válido")
+            return
+
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+        carrito = pantalla_recarga.carrito
+
+        if not carrito:
+            print("El carrito está vacío")
+            return
+
+        exito = registrar_pago_y_ventas(
+            remote_payment_id=f"PAGO-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+            payment_method=payment_method,   
+            bank="",
+            reference_code= cedula,
+            amount=self.total,
+            receipt="",
+            recharge=0,
+            carrito=carrito,
+            user_id=1,
+            machine_id=1
+        )  
+ 
+        if exito:
+            print("Pago realizado correctamente")
+            pantalla_recarga.carrito.clear()
+            self.ids.input_cedula_transferencia.text = ""
+            self.ids.input_cedula_tarjeta.text = ""
+            self.ids.spinner_pago.text = "Efectivo"
+            self.ids.input_contrasena.text = ""
+            self.ids.input_referencia.text = ""
+            self.manager.current = "inicio"
+        else:
+            print("Error al registrar el pago")
 
 def obtener_precio_dolar():
     try:
@@ -59,31 +182,31 @@ SUPERUSER_PASSWORD = "aguaSegura24"
 
 
     #if resultado:
-        #print("✅ Prueba exitosa: Usuario insertado correctamente.")
+        #print("Prueba exitosa: Usuario insertado correctamente.")
     #else:
-        #print("❌ Error: No se pudo insertar el usuario.")
+        #print("Error: No se pudo insertar el usuario.")
 
-def prueba_sistema():
+#def prueba_sistema():
     # Simulamos que el usuario que creamos tiene el ID 1
-    user_id_creado = 1 
+    #user_id_creado = 1 
     
-    resultado = insertar_maquina(
-        user_id=user_id_creado,
-        name='Máquina Central',
-        location='Plaza Principal',
-        status='available',
-        max_water=1000.0,
-        current_level=750.5,
-        price=0.50,
-        filter_ac=85.0,
-        filter_sg=90.0,
-        filter_zeo=78.0,
-        filter_rom=92.0,
-        filter_ml=88.0
-    )
+    #resultado = insertar_maquina(
+        #user_id=user_id_creado,
+        #name='Máquina Central',
+        #location='Plaza Principal',
+        #status='available',
+        #max_water=1000.0,
+        #current_level=750.5,
+        #price=0.50,
+        #filter_ac=85.0,
+        #filter_sg=90.0,
+        #filter_zeo=78.0,
+        #filter_rom=92.0,
+        #filter_ml=88.0
+    #)
 
-    if resultado:
-        print("Sistema de máquina listo.")
+    #if resultado:
+     #   print("Sistema de máquina listo.")
 
 class Product:
     def __init__(self, litros, precio):
@@ -267,9 +390,6 @@ class PantallaInformacion(Screen):
 class PantallaContacto(Screen):
     pass
 
-class PantallaPago(Screen):
-    pass
-
 class PantallaLogin(Screen):
     def verificar_contraseña(self):
         if self.ids.input_password.text == SUPERUSER_PASSWORD:
@@ -283,12 +403,15 @@ class PantallaCarrito(Screen):
     def on_pre_enter(self):
         self.actualizar_carrito()
 
-    def incrementar_cantidad(self):
-        self.cantidad += 1
-
-    def decrementar_cantidad(self):
-        if self.cantidad > 1:
-            self.cantidad -= 1
+    def imprimir_carrito(self):
+        app = App.get_running_app()
+        pantalla_recarga = app.root.get_screen("recarga")
+        total_general = 0
+        print("Resumen del carrito ")
+        for item in pantalla_recarga.carrito:
+            print(f"{item['cantidad']} x {item['producto'].litros}L - Bs {item['precio']} c/u = Bs {item['monto_final']}")
+            total_general += item['monto_final']
+        print(f"Total: Bs {total_general}")
 
     #Limpia y recorre el carrito de PantallaRecarga para llenar la tabla
     def actualizar_carrito(self):
@@ -304,7 +427,7 @@ class PantallaCarrito(Screen):
             monto_total = item['monto_final']
             self.agregar_item(item['producto'], descripcion, cantidad, monto_total)
 
-        self.actualizar_total_carrito()
+        self.actualizar_total_carrito() #AQUI ES, REVISAR
 
     def agregar_item(self, producto, descripcion, cantidad, monto_total):
         item = CarritoItem()
@@ -336,4 +459,4 @@ class ExpendedoraApp(App):
 if __name__ == '__main__':
     ExpendedoraApp().run()
     #test_insercion()
-    prueba_sistema()
+    #prueba_sistema()

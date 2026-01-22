@@ -129,6 +129,44 @@
     allow_stretch: True
     keep_ratio: True
 
+<CarritoItemPago>:
+    size_hint_y: None
+    height: dp(55)
+
+    BoxLayout:
+        orientation: 'horizontal'
+        padding: [dp(10), 0]
+        spacing: dp(10)
+
+        Label:
+            id: label_descripcion
+            font_name: 'Intro'
+            font_size: sp(18)
+            color: 0,0,0,1
+            size_hint_x: 0.5
+            halign: "left"
+            valign: "middle"
+            text_size: self.size
+
+        Label:
+            id: label_cantidad
+            font_name: 'Intro'
+            font_size: sp(18)
+            color: 0,0,0,1
+            size_hint_x: 0.2
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Label:
+            id: label_total
+            font_name: 'Intro'
+            font_size: sp(18)
+            color: 0,0,0,1
+            size_hint_x: 0.3
+            halign: "right"
+            valign: "middle"
+            text_size: self.size
 
 <CarritoItem>:
     size_hint_y: None
@@ -396,10 +434,6 @@
 
             Widget:
             Widget:
-        
-        # BotonVolver:
-        #     pos_hint: {"x": 0.03, "y": 0.032}
-        #     on_press: app.root.current = "inicio"
 
         Button:
             text: "REGRESAR"
@@ -435,11 +469,6 @@
             size_hint_y: None
             height: dp(40)  # Cambiado a dp
 
-    # BotonContinuar:
-    #     size_hint_y: None
-    #     height: dp(50)  # Cambiado a dp
-    #     pos_hint: {'right': 0.95, 'y': 0.03}
-    #     on_press: app.root.current = "carrito"
 
     Button:
         text: "CONTINUAR"
@@ -828,15 +857,6 @@
                     size_hint_x: 0.3
                     text_size: self.size
 
-        # MyRoundedButton:
-        #     text: "PAGAR"
-        #     font_name: 'Intro'
-        #     font_size: sp(36)  # Cambiado a sp
-        #     size_hint: (0.25, 0.10)
-        #     pos_hint: {"center_x": 0.5, "y": 0.05}
-        #     color: (1, 1, 1, 1)
-        #     on_press: app.root.current = "pago"
-
         Button:
             text: "PAGAR"
             font_name: 'Intro'
@@ -853,12 +873,9 @@
                     pos: self.pos
                     size: self.size
                     radius: [dp(15),]  # Cambiado a dp
-            on_press: app.root.current = "pago"
-
-        # Botón volver
-        # BotonVolver:
-        #     pos_hint: {"x": 0.03, "y": 0.032}
-        #     on_press: app.root.current = "recarga"
+            on_press: 
+                root.imprimir_carrito()
+                app.root.current = "pago"
 
         Button:
             text: "REGRESAR"
@@ -879,15 +896,513 @@
                     radius: [dp(15),]  # Cambiado a dp
             on_press: app.root.current = "recarga"
 
-            
-<PantallaPago>:
-    name: "pago"
-    canvas.before:
-        Color:
-            rgba: 1, 1, 1, 1  # Blanco
-        Rectangle:
-            pos: self.pos
-            size: self.size
+<PantallaCarrito>:
+    name: "carrito"
+    id: carrito_screen
 
     FloatLayout:
-        
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                source: "images/fondo.png"
+                pos: self.pos
+                size: self.size
+
+        # Título
+        Label:
+            text: "CARRITO DE COMPRA"
+            font_name: 'Intro'
+            font_size: sp(28)  # Cambiado a sp
+            color: (0.110, 0.235, 0.392)
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.90}
+
+        #Contenedor principal
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: self.parent.width * 0.6, self.parent.height * 0.65
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            padding: dp(5)  # Cambiado a dp
+            spacing: dp(5)  # Cambiado a dp
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20),]  # Cambiado a dp
+                Color:
+                    rgba: app.azul_oscuro
+                Line:
+                    width: dp(1.8)  # Cambiado a dp
+                    rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))  # Cambiado a dp
+
+            #Encabezado de columnas
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(30)  # Cambiado a dp
+                spacing: dp(2)  # Cambiado a dp
+                padding: [dp(10), 0, dp(10), 0]  # Cambiado a dp
+
+                Label:
+                    text: "PRODUCTO"
+                    font_name: 'Intro'
+                    font_size: sp(20)  # Cambiado a sp
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.5
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: "CANTIDAD"
+                    font_name: 'Intro'
+                    font_size: sp(20)  # Cambiado a sp
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.45
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: "MONTO"
+                    font_name: 'Intro'
+                    font_size: sp(20)  # Cambiado a sp
+                    color: 0, 0, 0, 1
+                    bold: True
+                    size_hint_x: 0.35
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    text: ""
+                    size_hint_x: 0.05
+            
+            #Divisor azul
+            BoxLayout:
+                size_hint_y: None
+                height: dp(2)  # Cambiado a dp
+                canvas.before:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            # ScrollView con los CarritoItem
+            ScrollView:
+                size_hint_y: 1
+                bar_width: dp(10)  # Cambiado a dp
+                scroll_type: ['bars', 'content']
+                do_scroll_x: False  
+
+                GridLayout:
+                    id: contenedor_items
+                    cols: 1
+                    spacing: dp(5)  # Cambiado a dp
+                    padding: [dp(5), dp(5)]  # Cambiado a dp
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1
+            
+            #Divisor azul entre items y total
+            BoxLayout:
+                size_hint_y: None
+                height: dp(2)  # Cambiado a dp
+                canvas.before:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(40)  # Cambiado a dp
+                padding: [dp(10), 0, dp(10), 0]  # Cambiado a dp
+                spacing: dp(10)  # Cambiado a dp
+
+                Label:
+                    text: "Total:"
+                    font_name: 'Intro'
+                    font_size: sp(20)  # Cambiado a sp
+                    color: 0, 0, 0, 1
+                    bold: True
+                    halign: "left"
+                    valign: "middle"
+                    size_hint_x: 0.7
+                    text_size: self.size
+
+                Label:
+                    id: total_label
+                    text: "$0"
+                    font_name: 'Intro'
+                    font_size: sp(20)  # Cambiado a sp
+                    color: 0, 0, 0, 1
+                    halign: "right"
+                    valign: "middle"
+                    size_hint_x: 0.3
+                    text_size: self.size
+
+        Button:
+            text: "PAGAR"
+            font_name: 'Intro'
+            font_size: sp(36)  # Cambiado a sp
+            size_hint: (0.25, 0.10)
+            pos_hint: {"center_x": 0.5, "y": 0.05}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: 0.118, 0.518, 0.286, 1 #1E8449
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]  # Cambiado a dp
+            on_press: 
+                root.imprimir_carrito()
+                app.root.current = "pago"
+
+
+        Button:
+            text: "REGRESAR"
+            font_name: 'Intro'
+            font_size: sp(18)  # Cambiado a sp
+            size_hint: None, None
+            size: dp(150), dp(50)  # Cambiado a dp
+            pos_hint: {"x": 0.03, "y": 0.032}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: rgba(151,2,2,255) # #971202
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]  # Cambiado a dp
+            on_press: app.root.current = "recarga"
+
+<CustomSpinnerDropdown@DropDown>:
+    canvas.before:
+        Color:
+            rgba: app.azul_oscuro
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15)]
+
+<CustomSpinnerOption@SpinnerOption>:
+    font_name: 'Intro'
+    font_size: sp(16)
+    color: 1, 1, 1, 1
+
+    background_normal: ""
+    background_down: ""
+    background_color:
+        (0.2, 0.6, 1, 1) if self.state == 'down' else app.azul_oscuro
+
+<PantallaPago>:
+    name: "pago"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                source: "images/fondo.png"
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "CONFIRMAR PAGO"
+            font_name: 'Intro'
+            font_size: sp(28)
+            color: (0.110, 0.235, 0.392)
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5, "top": 0.92}
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: None, None
+            size: self.parent.width * 0.9, self.parent.height * 0.65
+            pos_hint: {"center_x": 0.5, "center_y": 0.52}
+            spacing: dp(20)
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.4
+                padding: dp(10)
+                spacing: dp(10)
+
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(20)]
+
+                    Color:
+                        rgba: app.azul_oscuro
+                    Line:
+                        width: dp(1.8)
+                        rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))
+
+                #ENCABEZADO
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(32)
+
+                    Label:
+                        text: "PRODUCTO"
+                        color: 0, 0, 0, 1
+                        bold: True
+                        size_hint_x: 0.5
+                        font_name: 'Intro'
+                        font_size: sp(18)
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    Label:
+                        text: "CANT."
+                        color: 0, 0, 0, 1
+                        bold: True
+                        size_hint_x: 0.25
+                        font_name: 'Intro'
+                        font_size: sp(18)
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    Label:
+                        text: "MONTO"
+                        color: 0, 0, 0, 1
+                        bold: True
+                        size_hint_x: 0.25
+                        font_name: 'Intro'
+                        font_size: sp(18)
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(1)
+
+                    canvas:
+                        Color:
+                            rgba: app.azul_oscuro
+                        Line:
+                            points: self.x + dp(10), self.y, self.right - dp(10), self.y
+                            width: dp(1.2)
+
+                ScrollView:
+                    size_hint_y: 1
+
+                    GridLayout:
+                        id: contenedor_items
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(1)
+
+                    canvas:
+                        Color:
+                            rgba: app.azul_oscuro
+                        Line:
+                            points: self.x + dp(10), self.y, self.right - dp(10), self.y
+                            width: dp(1.2)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(40)
+                    padding: [dp(10), 0]
+
+                    Label:
+                        text: "Total:"
+                        font_name: 'Intro'
+                        font_size: sp(20)
+                        bold: True
+                        color: 0, 0, 0, 1
+                        size_hint_x: None
+                        width: self.texture_size[0]
+
+                    Widget:  
+                        size_hint_x: 1
+
+                    Label:
+                        id: total_label
+                        text: "0 Bs"
+                        font_name: 'Intro'
+                        font_size: sp(20)
+                        color: 0, 0, 0, 1
+                        halign: "right"
+                        valign: "middle"
+                        size_hint_x: None
+                        width: self.texture_size[0]
+                        text_size: None, None
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.35
+                padding: [dp(20), dp(20), dp(20), dp(20)]
+                spacing: dp(15)
+
+                Label:
+                    text: "Seleccione su método de pago"
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    color: 0, 0, 0, 1
+                    size_hint_y: None
+                    height: dp(25)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+
+                Spinner:
+                    id: spinner_pago
+                    values: ["Efectivo", "Transferencia bancaria", "Tarjeta"]
+                    text: "Efectivo"
+                    size_hint_y: None
+                    height: dp(50)
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    color: 1,1,1,1
+                    background_normal: ""
+                    background_down: ""
+                    background_color: app.azul_oscuro
+                    option_cls: 'CustomSpinnerOption'
+                    #dropdown_cls: 'CustomSpinnerDropdown'
+                    on_text: root.on_metodo_pago(self.text)
+                    canvas.before:
+                        Color:
+                            rgba: app.azul_oscuro
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]
+
+                BoxLayout:
+                    id: box_tarjeta
+                    orientation: 'vertical'
+                    spacing: dp(10)
+                    opacity: 0
+                    disabled: True
+                    size_hint_y: None
+                    height: self.minimum_height  
+
+                    TextInput:
+                        id: input_cedula_tarjeta
+                        hint_text: "Cédula"
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(45)
+                        size_hint_x: 1
+                        font_name: 'Intro'          
+                        font_size: sp(16)         
+                        foreground_color: 0, 0, 0, 1  
+                        hint_text_color: 0.5, 0.5, 0.5, 1 
+                        input_filter: 'int' 
+
+                    TextInput:
+                        id: input_contrasena
+                        hint_text: "Contraseña"
+                        password: True
+                        password_mask: "*"  
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(45)
+                        size_hint_x: 1
+                        font_size: sp(16)
+                        foreground_color: 0, 0, 0, 1
+                        hint_text_color: 0.5, 0.5, 0.5, 1
+
+                BoxLayout:
+                    id: box_transferencia
+                    orientation: 'vertical'
+                    spacing: dp(10)
+                    opacity: 0
+                    disabled: True
+                    size_hint_y: None
+                    height: self.minimum_height  
+
+                    TextInput:
+                        id: input_cedula_transferencia
+                        hint_text: "Cédula"
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(45)
+                        size_hint_x: 1
+                        font_size: sp(16)         
+                        foreground_color: 0, 0, 0, 1  
+                        hint_text_color: 0.5, 0.5, 0.5, 1  
+                        font_name: 'Intro'   
+                        input_filter: 'int'
+
+                    TextInput:
+                        id: input_referencia
+                        hint_text: "Referencia bancaria"
+                        multiline: False
+                        size_hint_y: None
+                        height: dp(45)
+                        size_hint_x: 1
+                        font_size: sp(16)         
+                        foreground_color: 0, 0, 0, 1  
+                        hint_text_color: 0.5, 0.5, 0.5, 1  
+                        font_name: 'Intro'   
+
+                Widget:
+                    size_hint_y: 1 
+
+        Button:
+            text: "CONFIRMAR PAGO"
+            font_name: 'Intro'
+            font_size: sp(22)
+            size_hint: None, None
+            size: dp(320), dp(60)
+            pos_hint: {"center_x": 0.5, "y": 0.06}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: 0.118, 0.518, 0.286, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15)]
+            on_press: root.confirmar_pago()
+
+        Button:
+            text: "REGRESAR"
+            font_name: 'Intro'
+            font_size: sp(18)
+            size_hint: None, None
+            size: dp(150), dp(50)
+            pos_hint: {"x": 0.03, "y": 0.03}
+            background_normal: ""
+            background_color: 0, 0, 0, 0
+            color: 1, 1, 1, 1
+            canvas.before:
+                Color:
+                    rgba: 151/255, 2/255, 2/255, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15)]
+            on_press: app.root.current = "carrito"
