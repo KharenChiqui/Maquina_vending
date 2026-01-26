@@ -383,7 +383,6 @@ class ModalTicketPago(ModalView):
         modal = ModalConfirmarPago()
         modal.total = total
         modal.open()
-
     
 class ModalConfirmarPago(ModalView):
     total = NumericProperty(0)
@@ -392,9 +391,11 @@ class ModalConfirmarPago(ModalView):
         super().__init__(**kwargs)
 
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
-
         Clock.schedule_once(lambda dt: self.bind_teclado_virtual(), 0)
+        Clock.schedule_once(lambda dt: self.init_spinner_tipo_cuenta(), 0)
+        Clock.schedule_once(lambda dt: self.bind_spinner_tipo_cuenta(), 0)
 
+    # ----------------TECLADO VIRTUAL----------------
     def bind_teclado_virtual(self):
         """Enlaza los TextInput al evento focus para abrir teclado virtual."""
         if hasattr(self.ids, 'input_cedula_tarjeta'):
@@ -412,6 +413,24 @@ class ModalConfirmarPago(ModalView):
         else:  # pierde foco
             subprocess.Popen(['pkill', 'onboard'])  # cerrar teclado virtual
 
+    # ----------------SPINNER DINÁMICO----------------
+    def init_spinner_tipo_cuenta(self):
+        """Inicializa el spinner con valor por defecto y opciones restantes."""
+        spinner = self.ids.spinner_tipo_cuenta
+        spinner.text = "Corriente"  
+        spinner.values = ["Ahorro"]  
+
+    def bind_spinner_tipo_cuenta(self):
+        """Enlaza el evento de selección del spinner para actualizar dinámicamente las opciones."""
+        spinner = self.ids.spinner_tipo_cuenta
+        spinner.bind(text=self.on_spinner_tipo_cuenta_select)
+
+    def on_spinner_tipo_cuenta_select(self, spinner, text):
+        """Actualiza las opciones del spinner para que la seleccionada no se duplique."""
+        todas_opciones = ["Corriente", "Ahorro"]
+        spinner.values = [v for v in todas_opciones if v != text]
+
+    # ----------------MÉTODO DE PAGO----------------
     def abrir_dropdown(self):
         # No se necesita dropdown de momento
         pass
@@ -422,6 +441,7 @@ class ModalConfirmarPago(ModalView):
             self.ids.box_tarjeta.disabled = False
             self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
 
+    # ---------------- CONFIRMAR PAGO ----------------
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
 
@@ -434,12 +454,10 @@ class ModalConfirmarPago(ModalView):
             return
 
         # ================= CREAR CADENA POS =================
-        # Formato para la cadena POS:
-        # "POS|<monto>|<cedula>|<tipo_cuenta>|<clave>"
+        # Formato: "POS|<monto>|<cedula>|<tipo_cuenta>|<clave>"
         cadena_pos = f"POS|{self.total:.2f}|{cedula}|{tipo_cuenta}|{contrasena}"
         print("Cadena POS generada:", cadena_pos)
         # =====================================================
-
 
         payment_method = "card"
 
