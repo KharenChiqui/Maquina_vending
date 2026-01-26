@@ -1,34 +1,45 @@
-from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.core.window import Window
-from kivy.core.text import LabelBase
-from kivy.uix.button import Button
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty, StringProperty
-from kivy.clock import Clock
-from kivy.utils import get_color_from_hex
-import requests # Asegúrate de tener requests instalado: pip install requests
-from kivy.uix.image import Image
-from kivy.animation import Animation
-from kivy.uix.modalview import ModalView
-from kivy.app import App
-from kivy.properties import NumericProperty
-from datetime import datetime
-
+# ================= CONFIGURACIÓN =================
 from kivy.config import Config
+# Configuración de ventana
 Config.set('graphics', 'width', '1024')
 Config.set('graphics', 'height', '600')
-Config.set('graphics', 'resizable', '0')  # Esto es importante para evitar redimensionamiento de la ventana 
-from bd_funciones import insertar_usuario
-from bd_funciones  import insertar_maquina
-from bd_funciones import registrar_pago_y_ventas
+Config.set('graphics', 'resizable', '0')  # Evita redimensionamiento
+# Activar teclado virtual en Linux
+Config.set('kivy', 'keyboard_mode', 'systemanddock')
+
+# ================= MÓDULOS ESTÁNDAR =================
 from datetime import datetime
+import requests  # pip install requests
+import subprocess
+
+# ================= KIVY =================
+from kivy.app import App
+from kivy.clock import Clock
+from kivy.core.text import LabelBase
+from kivy.core.window import Window
+from kivy.utils import get_color_from_hex
+
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.button import Button
+from kivy.uix.image import Image
+from kivy.uix.modalview import ModalView
+from kivy.uix.popup import Popup
+from kivy.uix.dropdown import DropDown
+
+from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty
+
+from kivy.animation import Animation
+
+# ================= MÓDULOS PROPIOS =================
+from bd_funciones import insertar_usuario, insertar_maquina, registrar_pago_y_ventas
 
 
 class CarritoItemPago(BoxLayout):
     pass
+
 
 def obtener_precio_dolar():
     try:
@@ -354,7 +365,6 @@ class ModalTicketPago(ModalView):
 
         total = 0
         for item in carrito:
-            # Instancia desde el Factory para usar el KV correctamente
             widget = Factory.CarritoItemPago()
             widget.ids.label_descripcion.text = f"Botellón {item['producto'].litros}L"
             widget.ids.label_cantidad.text = str(item['cantidad'])
@@ -378,55 +388,60 @@ class ModalTicketPago(ModalView):
 class ModalConfirmarPago(ModalView):
     total = NumericProperty(0)
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def on_metodo_pago(self, metodo):
-        
-        self.ids.input_cedula_tarjeta.text = ""
-        self.ids.input_contrasena.text = ""
-        self.ids.input_cedula_transferencia.text = ""
-        self.ids.input_referencia.text = ""
-        #self.ids.spinner_pago.text = "Efectivo"
-        self.ids.box_tarjeta.opacity = 0
-        self.ids.box_tarjeta.disabled = True
-        self.ids.box_tarjeta.height = 0
+        Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
 
-        self.ids.box_transferencia.opacity = 0
-        self.ids.box_transferencia.disabled = True
-        self.ids.box_transferencia.height = 0
+        Clock.schedule_once(lambda dt: self.bind_teclado_virtual(), 0)
 
-        if metodo == "Tarjeta":
+    def bind_teclado_virtual(self):
+        """Enlaza los TextInput al evento focus para abrir teclado virtual."""
+        if hasattr(self.ids, 'input_cedula_tarjeta'):
+            self.ids.input_cedula_tarjeta.bind(focus=self.show_keyboard)
+        if hasattr(self.ids, 'input_contrasena'):
+            self.ids.input_contrasena.bind(focus=self.show_keyboard)
+
+    def show_keyboard(self, instance, value):
+        """Abre teclado virtual cuando el TextInput gana foco, lo cierra al perderlo."""
+        if value:  # gana foco
+            try:
+                subprocess.Popen(['onboard'])  # lanzar teclado virtual
+            except FileNotFoundError:
+                print("No se encontró el teclado virtual 'onboard'. Instala con: sudo apt install onboard")
+        else:  # pierde foco
+            subprocess.Popen(['pkill', 'onboard'])  # cerrar teclado virtual
+
+    def abrir_dropdown(self):
+        # No se necesita dropdown de momento
+        pass
+
+    def on_metodo_pago(self, metodo=None):
+        if hasattr(self.ids, 'box_tarjeta'):
             self.ids.box_tarjeta.opacity = 1
             self.ids.box_tarjeta.disabled = False
             self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
 
-        elif metodo == "Transferencia bancaria":
-            self.ids.box_transferencia.opacity = 1
-            self.ids.box_transferencia.disabled = False
-            self.ids.box_transferencia.height = self.ids.box_transferencia.minimum_height
-
-  
-
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
 
-        metodo_ui = self.ids.spinner_pago.text
-        cedula = self.ids.input_cedula_tarjeta.text.strip() or \
-                 self.ids.input_cedula_transferencia.text.strip()
+        cedula = self.ids.input_cedula_tarjeta.text.strip()
+        contrasena = self.ids.input_contrasena.text.strip()
+        tipo_cuenta = self.ids.spinner_tipo_cuenta.text.strip()
 
-        if not cedula and metodo_ui != "Efectivo":
-            print("Debe ingresar la cédula")
+        if not cedula or not contrasena:
+            print("Debe ingresar cédula y contraseña")
             return
 
-        mapa_metodos = {
-            "Efectivo": "cash",
-            "Transferencia bancaria": "bank_transfer",
-            "Tarjeta": "card"
-        }
+        # ================= CREAR CADENA POS =================
+        # Formato para la cadena POS:
+        # "POS|<monto>|<cedula>|<tipo_cuenta>|<clave>"
+        cadena_pos = f"POS|{self.total:.2f}|{cedula}|{tipo_cuenta}|{contrasena}"
+        print("Cadena POS generada:", cadena_pos)
+        # =====================================================
 
-        payment_method = mapa_metodos.get(metodo_ui)
-        if not payment_method:
-            print("Seleccione un método válido")
-            return
+
+        payment_method = "card"
 
         app = App.get_running_app()
         pantalla_recarga = app.root.get_screen("recarga")

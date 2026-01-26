@@ -55,11 +55,11 @@ def insertar_maquina(user_id, name, location, status, max_water, current_level, 
         cursor.execute(query, valores)
         conexion.commit()
 
-        print(f"✅ Máquina '{name}' vinculada al usuario ID {user_id} correctamente.")
+        print(f"Máquina '{name}' vinculada al usuario ID {user_id} correctamente.")
         return True
 
     except sqlite3.Error as e:
-        print(f"❌ Error al insertar máquina: {e}")
+        print(f"Error al insertar máquina: {e}")
         return False
     finally:
         if conexion:
@@ -134,13 +134,13 @@ def registrar_pago_y_ventas(
             ))
 
         conexion.commit()
-        print("✅ Pago y ventas registradas correctamente")
+        print("Pago y ventas registradas correctamente")
         return True
 
     except sqlite3.Error as e:
         if conexion:
             conexion.rollback()
-        print(f"❌ Error en la transacción: {e}")
+        print(f"Error en la transacción: {e}")
         return False
 
     finally:

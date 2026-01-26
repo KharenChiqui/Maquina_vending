@@ -1,5 +1,6 @@
 #:kivy 2.0.0
 
+
 <BotonImagen@ButtonBehavior+Image>:
     source: ""
     size_hint: None, None
@@ -913,18 +914,33 @@
     background_color:
         (0.2, 0.6, 1, 1) if self.state == 'down' else app.azul_oscuro
 
-<ModalTicketPago>:
+<ModalTicketPago@FloatLayout>:  
     size_hint: None, None
     size: dp(600), dp(500)
-    auto_dismiss: False
-    background: ""
+
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0 
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     BoxLayout:
         orientation: 'vertical'
         spacing: dp(10)
         padding: dp(10)
+        size_hint: None, None
+        size: dp(600), dp(500)
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
-        # Label superior
+        canvas.before:
+            Color:
+                rgba: 1,1,1,1  # fondo blanco del modal
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(15)]  # esquinas redondeadas
+
         Label:
             text: "Ticket de Compra"
             font_name: 'Intro'
@@ -937,7 +953,6 @@
             valign: "middle"
             text_size: self.size
 
-        # Box blanco del ticket
         BoxLayout:
             orientation: 'vertical'
             spacing: dp(5)
@@ -957,7 +972,6 @@
                     width: dp(1.5)
                     rounded_rectangle: (self.x, self.y, self.width, self.height, dp(20))
 
-            # Encabezado de columnas
             BoxLayout:
                 size_hint_y: None
                 height: dp(30)
@@ -997,7 +1011,6 @@
                     font_name: 'Intro'
                     font_size: sp(18)
 
-            # Divisor azul
             BoxLayout:
                 size_hint_y: None
                 height: dp(2)
@@ -1008,7 +1021,6 @@
                         pos: self.pos
                         size: self.size
 
-            # Scroll de items
             ScrollView:
                 size_hint_y: 1
                 do_scroll_x: False
@@ -1022,7 +1034,6 @@
                     size_hint_y: None
                     height: self.minimum_height
 
-            # Divisor azul antes del total
             BoxLayout:
                 size_hint_y: None
                 height: dp(2)
@@ -1033,7 +1044,6 @@
                         pos: self.pos
                         size: self.size
 
-            # Total
             BoxLayout:
                 size_hint_y: None
                 height: dp(40)
@@ -1105,74 +1115,269 @@
                         radius: [dp(15),]
                 on_press: root.ir_a_pago()
 
-
-
 <ModalConfirmarPago>:
     size_hint: None, None
     size: dp(600), dp(420)
     auto_dismiss: False
-    background: ""
+    background_color: 1,1,1,1
 
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(15)
+        padding: [dp(20), dp(5), dp(20), dp(10)]
         spacing: dp(10)
+
+        canvas.before:
+            Color:
+                rgba: 1,1,1,1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(15)]
 
         Label:
             text: "DATOS DE PAGO"
             size_hint_y: None
             height: dp(40)
+            font_size: sp(20)
+            bold: True
+            font_name: 'Intro'
+            color: 0,0,0,1
 
-        Spinner:
-            id: spinner_pago
-            text: "Efectivo"
-            values: ["Efectivo", "Transferencia bancaria", "Tarjeta"]
-            on_text: root.on_metodo_pago(self.text)
+        Widget:
+            size_hint_y: None
+            height: dp(2)
+            canvas:
+                Color:
+                    rgba: app.azul_oscuro
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
-        # ===== TARJETA =====
+        BoxLayout:
+            size_hint_y: None
+            height: dp(45)
+            spacing: dp(10)
+
+            Label:
+                text: "Método de pago :"
+                font_name: 'Intro'
+                font_size: sp(16)
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+                color: 0,0,0,1
+
+            Button:
+                text: "TARJETA"
+                size_hint: None, None
+                size: dp(240), dp(45)
+                background_normal: ""
+                background_color: 0,0,0,0  
+                color: 1,1,1,1
+                font_name: 'Intro'
+                font_size: sp(20)
+
+                canvas.before:
+                    Color:
+                        rgba: app.azul_oscuro
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(15)]  
+
         BoxLayout:
             id: box_tarjeta
             orientation: 'vertical'
-            opacity: 0
-            disabled: True
-            height: 0
             size_hint_y: None
-
-            TextInput:
-                id: input_cedula_tarjeta
-                hint_text: "Cédula"
-
-            TextInput:
-                id: input_contrasena
-                hint_text: "Contraseña"
-                password: True
-
-        # ===== TRANSFERENCIA =====
-        BoxLayout:
-            id: box_transferencia
-            orientation: 'vertical'
-            opacity: 0
-            disabled: True
-            height: 0
-            size_hint_y: None
-
-            TextInput:
-                id: input_cedula_transferencia
-                hint_text: "Cédula"
-
-            TextInput:
-                id: input_referencia
-                hint_text: "Referencia"
-
-        BoxLayout:
-            size_hint_y: None
-            height: dp(50)
+            height: self.minimum_height
             spacing: dp(10)
 
-            Button:
-                text: "CANCELAR"
-                on_press: root.dismiss()
+            BoxLayout:
+                size_hint_y: None
+                height: dp(45)
+                spacing: dp(10)
 
-            Button:
-                text: "CONFIRMAR"
-                on_press: root.confirmar_pago()
+                Label:
+                    text: "CÉDULA :"
+                    size_hint_x: 0.35
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    color: 0,0,0,1
+
+                TextInput:
+                    id: input_cedula_tarjeta
+                    multiline: False
+                    write_tab: False
+                    padding: dp(12), dp(12)
+                    size_hint_x: None
+                    width: dp(240)
+                    input_filter: "int"
+                    background_normal: ""
+                    background_active: ""
+                    foreground_color: 0,0,0,1
+                    cursor_color: 0,0,0,1
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,0.3  
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]  
+                        Color:
+                            #rgba: 0.2, 0.2, 0.2, 0.5
+                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5  
+                        Line:
+                            width: dp(1)
+                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(45)
+                spacing: dp(10)
+
+                Label:
+                    text: "CONTRASEÑA :"
+                    size_hint_x: 0.35
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    color: 0,0,0,1
+
+                TextInput:
+                    id: input_contrasena
+                    password: True
+                    multiline: False
+                    write_tab: False
+                    padding: dp(12), dp(12)
+                    size_hint_x: None
+                    width: dp(240)
+                    input_filter: "int"
+
+                    background_normal: ""
+                    background_active: ""
+
+                    foreground_color: 0,0,0,1
+                    cursor_color: 0,0,0,1
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,0.3  
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]  
+                        Color:
+                            #rgba: 0.2, 0.2, 0.2, 0.5
+                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5  
+                        Line:
+                            width: dp(1)
+                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(45)
+                spacing: dp(10)
+
+                Label:
+                    text: "Tipo de cuenta :"
+                    size_hint_x: 0.35
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    halign: 'left'
+                    valign: 'middle'
+                    text_size: self.size
+                    color: 0,0,0,1
+
+                Spinner:
+                    id: spinner_tipo_cuenta
+                    text: "Corriente"  
+                    values: ["Corriente", "Ahorro"]
+                    size_hint_x: None
+                    width: dp(240)
+                    background_normal: ""
+                    background_color: 1,1,1,0.3 
+                    color: 0,0,0,1
+                    font_name: 'Intro'
+                    font_size: sp(16)
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,0.3  
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]
+                        Color:
+                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
+                        Line:
+                            width: dp(1)
+                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+        Widget:
+            size_hint_y: 1
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(70)
+            spacing: dp(5)
+
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(60)
+                padding: [dp(10),0,dp(10),0]
+
+                Button:
+                    text: "CANCELAR"
+                    font_name: 'Intro'
+                    font_size: sp(20)
+                    size_hint: None, None
+                    size: dp(150), dp(50)
+                    background_normal: ""
+                    background_color: 0,0,0,0
+                    color: 1,1,1,1
+                    canvas.before:
+                        Color:
+                            rgba: 0.588, 0.008, 0.008, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                    on_press: root.dismiss()
+
+                Widget:
+                    size_hint_x: 1
+
+                Button:
+                    text: "CONFIRMAR"
+                    font_name: 'Intro'
+                    font_size: sp(20)
+                    size_hint: None, None
+                    size: dp(150), dp(50)
+                    background_normal: ""
+                    background_color: 0,0,0,0
+                    color: 1,1,1,1
+                    canvas.before:
+                        Color:
+                            rgba: 0.118, 0.518, 0.286, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                    on_press: root.confirmar_pago()
+
+
+
