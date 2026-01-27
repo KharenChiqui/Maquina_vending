@@ -1385,8 +1385,6 @@
     auto_dismiss: False
 
     FloatLayout:
-
-        # ---------- CONTENEDOR PRINCIPAL ----------
         BoxLayout:
             orientation: "vertical"
             padding: [dp(20), dp(10), dp(20), dp(10)]
@@ -1403,7 +1401,6 @@
                     size: self.size
                     radius: [dp(20)]
 
-            # ---------- TITULO ----------
             Label:
                 id: titulo
                 font_name: 'Intro'
@@ -1415,7 +1412,6 @@
                 height: dp(50)
                 color: 0,0,0,1
 
-            # ---------- DIVISOR SUPERIOR ----------
             Widget:
                 size_hint_y: None
                 height: dp(2)
@@ -1426,7 +1422,6 @@
                         pos: self.pos
                         size: self.size
 
-            # ---------- IMAGEN FLEXIBLE ----------
             Image:
                 source: "images/instrucciones_botellon.png"
                 size_hint_x: None
@@ -1436,7 +1431,6 @@
                 keep_ratio: True
                 pos_hint: {"center_x": 0.5}
 
-            # ---------- DIVISOR INFERIOR ----------
             Widget:
                 size_hint_y: None
                 height: dp(2)
@@ -1446,8 +1440,6 @@
                     Rectangle:
                         pos: self.pos
                         size: self.size
-
-            # ---------- LABEL RESTANTES ----------
             Label:
                 id: label_restantes
                 font_name: 'Intro'
@@ -1457,7 +1449,7 @@
                 size_hint_y: None
                 height: dp(32)
 
-            # ---------- BOTONES ----------
+
             BoxLayout:
                 size_hint_y: None
                 height: dp(80)
