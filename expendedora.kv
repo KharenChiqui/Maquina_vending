@@ -1379,5 +1379,202 @@
                             radius: [dp(15),]
                     on_press: root.confirmar_pago()
 
+<ModalInstruccionesBotellon>:
+    size_hint: None, None
+    size: dp(720), dp(560)
+    auto_dismiss: False
 
+    FloatLayout:
+
+        # ---------- CONTENEDOR PRINCIPAL ----------
+        BoxLayout:
+            orientation: "vertical"
+            padding: [dp(20), dp(10), dp(20), dp(10)]
+            spacing: dp(4)
+            size_hint: None, None
+            size: dp(720), dp(560)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+            canvas.before:
+                Color:
+                    rgba: 1,1,1,1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20)]
+
+            # ---------- TITULO ----------
+            Label:
+                id: titulo
+                font_name: 'Intro'
+                font_size: sp(22)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+                size_hint_y: None
+                height: dp(50)
+                color: 0,0,0,1
+
+            # ---------- DIVISOR SUPERIOR ----------
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            # ---------- IMAGEN FLEXIBLE ----------
+            Image:
+                source: "images/instrucciones_botellon.png"
+                size_hint_x: None
+                size_hint_y: 1
+                width: dp(450)
+                allow_stretch: True
+                keep_ratio: True
+                pos_hint: {"center_x": 0.5}
+
+            # ---------- DIVISOR INFERIOR ----------
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            # ---------- LABEL RESTANTES ----------
+            Label:
+                id: label_restantes
+                font_name: 'Intro'
+                font_size: sp(18)
+                halign: "center"
+                color: 0,0,0,1
+                size_hint_y: None
+                height: dp(32)
+
+            # ---------- BOTONES ----------
+            BoxLayout:
+                size_hint_y: None
+                height: dp(80)
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_x: 0.5
+                    spacing: dp(10)
+
+                    Button:
+                        id: btn_lavado
+                        text: "LAVADO"
+                        size_hint: None, None
+                        size: dp(150), dp(50)
+                        background_normal: ""
+                        background_color: 0,0,0,0
+                        color: 1,1,1,1
+                        font_name: 'Intro'
+                        font_size: sp(20)
+                        on_press: root.iniciar_lavado()
+
+                        canvas.before:
+                            Color:
+                                rgba: app.azul_oscuro if not self.disabled else (0.6,0.6,0.6,1)
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+
+                    Button:
+                        id: btn_llenado
+                        text: "LLENADO"
+                        disabled: True
+                        size_hint: None, None
+                        size: dp(150), dp(50)
+                        background_normal: ""
+                        background_color: 0,0,0,0
+                        color: 1,1,1,1
+                        font_name: 'Intro'
+                        font_size: sp(20)
+                        on_press: root.iniciar_llenado()
+
+                        canvas.before:
+                            Color:
+                                rgba: app.azul_oscuro if not self.disabled else (0.6,0.6,0.6,1)
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+
+                Widget:
+
+                Button:
+                    id: btn_continuar
+                    text: "CONTINUAR"
+                    disabled: True
+                    size_hint: None, None
+                    size: dp(150), dp(50)
+                    font_name: 'Intro'
+                    font_size: sp(24)
+                    background_normal: ""
+                    background_color: 0,0,0,0
+                    color: 1,1,1,1
+                    on_press: root.continuar()
+
+                    canvas.before:
+                        Color:
+                            rgba: (0.118, 0.518, 0.286, 1) if not self.disabled else (0.6,0.6,0.6,1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15)]
+
+        # ---------- POPUP LAVADO ----------
+        BoxLayout:
+            id: popup_lavado
+            size_hint: None, None
+            size: dp(400), dp(150)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            orientation: "vertical"
+            spacing: dp(10)
+            padding: [dp(20), dp(15)]
+            opacity: 0
+
+            canvas.before:
+                Color:
+                    rgba: 0.118, 0.518, 0.286, 0.7
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20)]
+
+            Image:
+                source: "images/advertencia.png"
+                size_hint: None, None
+                size: dp(40), dp(40)
+                pos_hint: {"center_x": 0.5}
+
+            Label:
+                text: "No mueva el botellón durante el lavado"
+                font_size: sp(20)
+                font_name: 'Intro'
+                color: 1,1,1,1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+            ProgressBar:
+                id: barra_lavado
+                max: 100
+                value: 0
+                size_hint_y: None
+                height: dp(20)
+                canvas.after:
+                    Color:
+                        rgba: 1,1,1,1
+                    Rectangle:
+                        pos: self.pos
+                        size: (self.width * (self.value / self.max), self.height)
 

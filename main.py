@@ -28,6 +28,7 @@ from kivy.uix.image import Image
 from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
+from kivy.uix.label import Label
 
 from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty
 
@@ -479,9 +480,105 @@ class ModalConfirmarPago(ModalView):
         )
 
         if exito:
+            carrito = pantalla_recarga.carrito
+
+            cola = []
+            for item in carrito:
+                cola.extend([item['producto'].litros] * item['cantidad'])
+
             pantalla_recarga.carrito.clear()
             self.dismiss()
-            app.root.current = "inicio"
+
+            modal = ModalInstruccionesBotellon()
+            modal.cola_botellones = cola
+            modal.open()
+
+class ModalInstruccionesBotellon(ModalView):
+    cola_botellones = ListProperty([])
+    botellon_actual = NumericProperty(0)
+    progreso_lavado = NumericProperty(0)
+
+    def on_open(self):
+        self.mostrar_botellon_actual()
+
+    def mostrar_botellon_actual(self):
+        litros = self.cola_botellones[0]
+        self.botellon_actual = litros
+
+        self.ids.titulo.text = (
+            f"Introduzca el botellón de {litros}L en la máquina"
+        )
+
+        self.ids.label_restantes.text = (
+            f"Botellones restantes : {len(self.cola_botellones)}"
+        )
+
+        self.reset_estado()
+
+    # ---------- ESTADOS ----------
+    def reset_estado(self):
+        self.progreso_lavado = 0
+        self.ids.barra_lavado.value = 0
+
+        self.ids.btn_lavado.disabled = False
+        self.ids.btn_llenado.disabled = True
+        self.ids.btn_continuar.disabled = True
+
+        self.ids.popup_lavado.opacity = 0
+
+    # ---------- LAVADO ----------
+    def iniciar_lavado(self):
+        # Deshabilitar botones
+        self.ids.btn_lavado.disabled = True
+        self.ids.btn_llenado.disabled = True
+        self.ids.btn_continuar.disabled = True
+
+        # Decrementar contador de botellones
+        restantes = len(self.cola_botellones) - 1
+        self.ids.label_restantes.text = (
+            f"Botellones restantes : {restantes}"
+        )
+
+        # Mostrar popup
+        self.ids.popup_lavado.opacity = 1
+        self.progreso_lavado = 0
+        self.ids.barra_lavado.value = 0
+
+        # Iniciar animación de barra
+        Clock.schedule_interval(self.actualizar_lavado, 0.1)
+
+    def actualizar_lavado(self, dt):
+        self.progreso_lavado += 2
+        self.ids.barra_lavado.value = self.progreso_lavado
+
+        if self.progreso_lavado >= 100:
+            Clock.unschedule(self.actualizar_lavado)
+            self.ids.popup_lavado.opacity = 0
+            self.ids.btn_llenado.disabled = False
+            return False
+
+        return True
+
+    # ---------- LLENADO ----------
+    def iniciar_llenado(self):
+        self.ids.btn_llenado.disabled = True
+        self.ids.btn_continuar.disabled = False
+
+    # ---------- CONTINUAR ----------
+    def continuar(self):
+        # Solo cerrar modal, no decrementa contador aquí
+        self.cola_botellones.pop(0)
+        self.dismiss()
+
+        if self.cola_botellones:
+            modal = ModalInstruccionesBotellon()
+            modal.cola_botellones = self.cola_botellones
+            modal.open()
+        else:
+            App.get_running_app().root.current = "inicio"
+
+
+
 
 if __name__ == '__main__':
     ExpendedoraApp().run()
