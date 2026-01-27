@@ -1115,6 +1115,24 @@
                         radius: [dp(15),]
                 on_press: root.ir_a_pago()
 
+<SpinnerOptionCustom@SpinnerOption>:
+    font_name: 'Intro'
+    font_size: sp(16)
+    color: 1,1,1,1
+    background_normal: ""
+    background_color: 0,0,0,0
+    size_hint_y: None
+    height: dp(40)
+
+    canvas.before:
+        Color:
+            rgba: app.azul_oscuro
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12)]
+
+
 <ModalConfirmarPago>:
     size_hint: None, None
     size: dp(600), dp(420)
@@ -1303,6 +1321,7 @@
                     color: 0,0,0,1
                     font_name: 'Intro'
                     font_size: sp(16)
+                    option_cls: 'SpinnerOptionCustom'
                     canvas.before:
                         Color:
                             rgba: 1,1,1,0.3  
