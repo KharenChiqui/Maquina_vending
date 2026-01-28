@@ -1229,6 +1229,7 @@
                     id: input_cedula_tarjeta
                     multiline: False
                     write_tab: False
+                    on_text_validate: input_contrasena.focus = True
                     padding: dp(12), dp(12)
                     size_hint_x: None
                     width: dp(240)
@@ -1271,6 +1272,7 @@
                     password: True
                     multiline: False
                     write_tab: False
+                    on_text_validate: root.confirmar_pago()
                     padding: dp(12), dp(12)
                     size_hint_x: None
                     width: dp(240)
