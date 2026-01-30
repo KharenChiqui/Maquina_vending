@@ -421,7 +421,6 @@ class ModalConfirmarPago(ModalView):
         Clock.schedule_once(self.build_keyboard, 0)
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
 
-    # ---------------- SPINNER DINÁMICO ----------------
     def init_spinner(self, dt):
         sp = self.ids.spinner_tipo_cuenta
         sp.text = "Corriente"
@@ -438,7 +437,6 @@ class ModalConfirmarPago(ModalView):
 
     # ---------------- TECLADO NUMÉRICO ----------------
     def build_keyboard(self, dt):
-        # Creamos el grid del teclado sin agregarlo al overlay todavía
         self.keyboard_grid = GridLayout(
             cols=3, spacing=dp(5), size_hint=(None, None)
         )
@@ -459,13 +457,11 @@ class ModalConfirmarPago(ModalView):
 
     def focus_input(self, input_widget, focus):
         if focus:
-            # Si hay otro input activo, cerramos su foco
             if self.numeric_target and self.numeric_target != input_widget:
                 self.numeric_target.focus = False
             self.numeric_target = input_widget
             self.show_keyboard()
         else:
-            # Revisamos si se perdió foco en todos los inputs
             Clock.schedule_once(self.hide_keyboard_if_no_focus, 0.05)
 
     def show_keyboard(self):
@@ -473,7 +469,6 @@ class ModalConfirmarPago(ModalView):
         overlay.clear_widgets()
         overlay.add_widget(self.keyboard_grid)
 
-        # Centramos el grid en el overlay
         self.keyboard_grid.pos = (
             (overlay.width - self.keyboard_grid.width)/2,
             (overlay.height - self.keyboard_grid.height)/2
@@ -483,7 +478,6 @@ class ModalConfirmarPago(ModalView):
         overlay.disabled = False
 
     def hide_keyboard_if_no_focus(self, dt):
-        # Cerramos teclado solo si ningún input tiene foco
         inputs = [self.ids.input_cedula_tarjeta, self.ids.input_contrasena]
         if not any(inp.focus for inp in inputs):
             self.numeric_target = None
@@ -502,7 +496,7 @@ class ModalConfirmarPago(ModalView):
         else:
             self.numeric_target.text += btn.text
 
-    # ---------------- CONFIRMAR PAGO ----------------
+    
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
 
@@ -569,7 +563,6 @@ class ModalInstruccionesBotellon(ModalView):
 
         self.reset_estado()
 
-    # ---------- ESTADOS ----------
     def reset_estado(self):
         self.progreso_lavado = 0
         self.ids.barra_lavado.value = 0
@@ -580,14 +573,13 @@ class ModalInstruccionesBotellon(ModalView):
 
         self.ids.popup_lavado.opacity = 0
 
-    # ---------- LAVADO ----------
+   
     def iniciar_lavado(self):
-        # Deshabilitar botones
         self.ids.btn_lavado.disabled = True
         self.ids.btn_llenado.disabled = True
         self.ids.btn_continuar.disabled = True
 
-        # Decrementar contador de botellones
+   
         restantes = len(self.cola_botellones) - 1
         self.ids.label_restantes.text = (
             f"Botellones restantes : {restantes}"
@@ -613,14 +605,13 @@ class ModalInstruccionesBotellon(ModalView):
 
         return True
 
-    # ---------- LLENADO ----------
+
     def iniciar_llenado(self):
         self.ids.btn_llenado.disabled = True
         self.ids.btn_continuar.disabled = False
 
     # ---------- CONTINUAR ----------
     def continuar(self):
-        # Solo cerrar modal, no decrementa contador aquí
         self.cola_botellones.pop(0)
         self.dismiss()
 

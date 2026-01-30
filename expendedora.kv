@@ -1140,8 +1140,6 @@
     background_color: 0,0,0,0
 
     FloatLayout:
-
-        # ================= MODAL =================
         BoxLayout:
             orientation: 'vertical'
             size_hint: None, None
@@ -1177,7 +1175,6 @@
                         pos: self.pos
                         size: self.size
 
-            # ---------- MÉTODO DE PAGO ----------
             BoxLayout:
                 size_hint_y: None
                 height: dp(45)
@@ -1209,7 +1206,6 @@
                             size: self.size
                             radius: [dp(15)]
 
-            # ---------- DATOS TARJETA ----------
             BoxLayout:
                 id: box_tarjeta
                 orientation: 'vertical'
@@ -1345,7 +1341,6 @@
             Widget:
                 size_hint_y: 1
 
-            # ---------- DIVISOR + BOTONES ----------
             Widget:
                 size_hint_y: None
                 height: dp(2)
@@ -1401,7 +1396,6 @@
                             radius: [dp(15)]
                     on_press: root.confirmar_pago()
 
-        # ================= TECLADO NUMÉRICO =================
         FloatLayout:
             id: keyboard_overlay
             size_hint: None, None
