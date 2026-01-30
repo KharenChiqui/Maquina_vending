@@ -1137,87 +1137,54 @@
     size_hint: None, None
     size: dp(600), dp(420)
     auto_dismiss: False
-    background_color: 1,1,1,1
+    background_color: 0,0,0,0
 
-    BoxLayout:
-        orientation: 'vertical'
-        padding: [dp(20), dp(5), dp(20), dp(10)]
-        spacing: dp(10)
+    FloatLayout:
 
-        canvas.before:
-            Color:
-                rgba: 1,1,1,1
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [dp(15)]
+        # ================= MODAL =================
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: None, None
+            size: root.size
+            pos: root.pos
+            padding: [dp(20), dp(5), dp(20), dp(10)]
+            spacing: dp(10)
 
-        Label:
-            text: "DATOS DE PAGO"
-            size_hint_y: None
-            height: dp(40)
-            font_size: sp(20)
-            bold: True
-            font_name: 'Intro'
-            color: 0,0,0,1
-
-        Widget:
-            size_hint_y: None
-            height: dp(2)
-            canvas:
+            canvas.before:
                 Color:
-                    rgba: app.azul_oscuro
-                Rectangle:
+                    rgba: 1,1,1,1
+                RoundedRectangle:
                     pos: self.pos
                     size: self.size
-
-        BoxLayout:
-            size_hint_y: None
-            height: dp(45)
-            spacing: dp(10)
+                    radius: [dp(15)]
 
             Label:
-                text: "Método de pago :"
+                text: "DATOS DE PAGO"
+                size_hint_y: None
+                height: dp(40)
+                font_size: sp(20)
+                bold: True
                 font_name: 'Intro'
-                font_size: sp(16)
-                halign: 'left'
-                valign: 'middle'
-                text_size: self.size
                 color: 0,0,0,1
 
-            Button:
-                text: "TARJETA"
-                size_hint: None, None
-                size: dp(240), dp(45)
-                background_normal: ""
-                background_color: 0,0,0,0  
-                color: 1,1,1,1
-                font_name: 'Intro'
-                font_size: sp(20)
-
-                canvas.before:
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas:
                     Color:
                         rgba: app.azul_oscuro
-                    RoundedRectangle:
+                    Rectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [dp(15)]  
 
-        BoxLayout:
-            id: box_tarjeta
-            orientation: 'vertical'
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(10)
-
+            # ---------- MÉTODO DE PAGO ----------
             BoxLayout:
                 size_hint_y: None
                 height: dp(45)
                 spacing: dp(10)
 
                 Label:
-                    text: "CÉDULA :"
-                    size_hint_x: 0.35
+                    text: "Método de pago :"
                     font_name: 'Intro'
                     font_size: sp(16)
                     halign: 'left'
@@ -1225,127 +1192,160 @@
                     text_size: self.size
                     color: 0,0,0,1
 
-                TextInput:
-                    id: input_cedula_tarjeta
-                    multiline: False
-                    write_tab: False
-                    on_text_validate: input_contrasena.focus = True
-                    padding: dp(12), dp(12)
-                    size_hint_x: None
-                    width: dp(240)
-                    input_filter: "int"
+                Button:
+                    text: "TARJETA"
+                    size_hint: None, None
+                    size: dp(240), dp(45)
                     background_normal: ""
-                    background_active: ""
-                    foreground_color: 0,0,0,1
-                    cursor_color: 0,0,0,1
+                    background_color: 0,0,0,0
+                    color: 1,1,1,1
+                    font_name: 'Intro'
+                    font_size: sp(20)
                     canvas.before:
                         Color:
-                            rgba: 1,1,1,0.3  
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [dp(15)]  
-                        Color:
-                            #rgba: 0.2, 0.2, 0.2, 0.5
-                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5  
-                        Line:
-                            width: dp(1)
-                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
-
-            BoxLayout:
-                size_hint_y: None
-                height: dp(45)
-                spacing: dp(10)
-
-                Label:
-                    text: "CONTRASEÑA :"
-                    size_hint_x: 0.35
-                    font_name: 'Intro'
-                    font_size: sp(16)
-                    halign: 'left'
-                    valign: 'middle'
-                    text_size: self.size
-                    color: 0,0,0,1
-
-                TextInput:
-                    id: input_contrasena
-                    password: True
-                    multiline: False
-                    write_tab: False
-                    on_text_validate: root.confirmar_pago()
-                    padding: dp(12), dp(12)
-                    size_hint_x: None
-                    width: dp(240)
-                    input_filter: "int"
-
-                    background_normal: ""
-                    background_active: ""
-
-                    foreground_color: 0,0,0,1
-                    cursor_color: 0,0,0,1
-                    canvas.before:
-                        Color:
-                            rgba: 1,1,1,0.3  
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [dp(15)]  
-                        Color:
-                            #rgba: 0.2, 0.2, 0.2, 0.5
-                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5  
-                        Line:
-                            width: dp(1)
-                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
-
-            BoxLayout:
-                size_hint_y: None
-                height: dp(45)
-                spacing: dp(10)
-
-                Label:
-                    text: "Tipo de cuenta :"
-                    size_hint_x: 0.35
-                    font_name: 'Intro'
-                    font_size: sp(16)
-                    halign: 'left'
-                    valign: 'middle'
-                    text_size: self.size
-                    color: 0,0,0,1
-
-                Spinner:
-                    id: spinner_tipo_cuenta
-                    text: "Corriente"  
-                    values: ["Corriente", "Ahorro"]
-                    size_hint_x: None
-                    width: dp(240)
-                    background_normal: ""
-                    background_color: 1,1,1,0.3 
-                    color: 0,0,0,1
-                    font_name: 'Intro'
-                    font_size: sp(16)
-                    option_cls: 'SpinnerOptionCustom'
-                    canvas.before:
-                        Color:
-                            rgba: 1,1,1,0.3  
+                            rgba: app.azul_oscuro
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
                             radius: [dp(15)]
-                        Color:
-                            rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
-                        Line:
-                            width: dp(1)
-                            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
-        Widget:
-            size_hint_y: 1
+            # ---------- DATOS TARJETA ----------
+            BoxLayout:
+                id: box_tarjeta
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
 
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: dp(70)
-            spacing: dp(5)
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(45)
+                    spacing: dp(10)
 
+                    Label:
+                        text: "CÉDULA :"
+                        size_hint_x: 0.35
+                        font_name: 'Intro'
+                        font_size: sp(16)
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        color: 0,0,0,1
+
+                    TextInput:
+                        id: input_cedula_tarjeta
+                        multiline: False
+                        input_filter: 'int'
+                        keyboard_mode: 'managed'
+                        keyboard: None
+                        on_focus: root.focus_input(self, self.focus)
+                        padding: dp(12), dp(12)
+                        size_hint_x: None
+                        width: dp(240)
+                        background_normal: ""
+                        background_active: ""
+                        foreground_color: 0,0,0,1
+                        cursor_color: 0,0,0,1
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,0.3
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+                            Color:
+                                rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(45)
+                    spacing: dp(10)
+
+                    Label:
+                        text: "CONTRASEÑA :"
+                        size_hint_x: 0.35
+                        font_name: 'Intro'
+                        font_size: sp(16)
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        color: 0,0,0,1
+
+                    TextInput:
+                        id: input_contrasena
+                        password: True
+                        multiline: False
+                        input_filter: 'int'
+                        keyboard_mode: 'managed'
+                        keyboard: None
+                        on_focus: root.focus_input(self, self.focus)
+                        padding: dp(12), dp(12)
+                        size_hint_x: None
+                        width: dp(240)
+                        background_normal: ""
+                        background_active: ""
+                        foreground_color: 0,0,0,1
+                        cursor_color: 0,0,0,1
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,0.3
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+                            Color:
+                                rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(45)
+                    spacing: dp(10)
+
+                    Label:
+                        text: "Tipo de cuenta :"
+                        size_hint_x: 0.35
+                        font_name: 'Intro'
+                        font_size: sp(16)
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        color: 0,0,0,1
+
+                    Spinner:
+                        id: spinner_tipo_cuenta
+                        text: "Corriente"
+                        values: ["Corriente", "Ahorro"]
+                        size_hint_x: None
+                        width: dp(240)
+                        background_normal: ""
+                        background_color: 1,1,1,0.3
+                        color: 0,0,0,1
+                        font_name: 'Intro'
+                        font_size: sp(16)
+                        option_cls: 'SpinnerOptionCustom'
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,0.3
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+                            Color:
+                                rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
+            Widget:
+                size_hint_y: 1
+
+            # ---------- DIVISOR + BOTONES ----------
             Widget:
                 size_hint_y: None
                 height: dp(2)
@@ -1359,7 +1359,8 @@
             BoxLayout:
                 size_hint_y: None
                 height: dp(60)
-                padding: [dp(10),0,dp(10),0]
+                padding: [dp(10), 0, dp(10), 0]
+                spacing: dp(10)
 
                 Button:
                     text: "CANCELAR"
@@ -1376,7 +1377,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [dp(15),]
+                            radius: [dp(15)]
                     on_press: root.dismiss()
 
                 Widget:
@@ -1397,8 +1398,26 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [dp(15),]
+                            radius: [dp(15)]
                     on_press: root.confirmar_pago()
+
+        # ================= TECLADO NUMÉRICO =================
+        FloatLayout:
+            id: keyboard_overlay
+            size_hint: None, None
+            size: dp(360), dp(300)
+            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            opacity: 0
+            disabled: True
+
+            BoxLayout:
+                id: numeric_keyboard_container
+                size_hint: None, None
+                size: dp(360), dp(300)
+                pos: 0,0
+                orientation: 'vertical'
+                padding: dp(10)
+
 
 <ModalInstruccionesBotellon>:
     size_hint: None, None

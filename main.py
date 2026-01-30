@@ -1,22 +1,22 @@
 # ================= CONFIGURACIÓN =================
 from kivy.config import Config
-# Configuración de ventana
+
 Config.set('graphics', 'width', '1024')
 Config.set('graphics', 'height', '600')
-Config.set('graphics', 'resizable', '0')  # Evita redimensionamiento
-# Activar teclado virtual en Linux
-Config.set('kivy', 'keyboard_mode', 'systemanddock')
+Config.set('graphics', 'resizable', '0')
+
+# Docked keyboard (aunque no usamos VKeyboard, no hace daño dejarlo)
+Config.set('kivy', 'keyboard_mode', 'dock')
 
 # ================= MÓDULOS ESTÁNDAR =================
 from datetime import datetime
 import requests  # pip install requests
-import subprocess
 
 # ================= KIVY =================
 from kivy.app import App
 from kivy.clock import Clock
-from kivy.core.text import LabelBase
 from kivy.core.window import Window
+from kivy.core.text import LabelBase
 from kivy.utils import get_color_from_hex
 
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -29,13 +29,32 @@ from kivy.uix.modalview import ModalView
 from kivy.uix.popup import Popup
 from kivy.uix.dropdown import DropDown
 from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.properties import NumericProperty, ListProperty  # para propiedades de Kivy
+from kivy.uix.gridlayout import GridLayout  # para organizar botones
+from kivy.metrics import dp, sp            # para tamaños responsivos
 
-from kivy.properties import StringProperty, BooleanProperty, ObjectProperty, NumericProperty, ListProperty
+
+from kivy.properties import (
+    StringProperty,
+    BooleanProperty,
+    ObjectProperty,
+    NumericProperty,
+    ListProperty
+)
 
 from kivy.animation import Animation
 
 # ================= MÓDULOS PROPIOS =================
-from bd_funciones import insertar_usuario, insertar_maquina, registrar_pago_y_ventas
+from bd_funciones import (
+    insertar_usuario,
+    insertar_maquina,
+    registrar_pago_y_ventas
+)
+
+
+# Si ModalInstruccionesBotellon está definido en otro archivo, importarlo aquí
+# from modales import ModalInstruccionesBotellon
 
 
 class CarritoItemPago(BoxLayout):
@@ -387,60 +406,101 @@ class ModalTicketPago(ModalView):
     
 class ModalConfirmarPago(ModalView):
     total = NumericProperty(0)
+    numeric_target = None
+
+    keyboard_layout = [
+        ['1','2','3'],
+        ['4','5','6'],
+        ['7','8','9'],
+        ['←','0','✔']
+    ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        Clock.schedule_once(self.init_spinner, 0)
+        Clock.schedule_once(self.build_keyboard, 0)
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
-        Clock.schedule_once(lambda dt: self.bind_teclado_virtual(), 0)
-        Clock.schedule_once(lambda dt: self.init_spinner_tipo_cuenta(), 0)
-        Clock.schedule_once(lambda dt: self.bind_spinner_tipo_cuenta(), 0)
 
-    # ----------------TECLADO VIRTUAL----------------
-    def bind_teclado_virtual(self):
-        """Enlaza los TextInput al evento focus para abrir teclado virtual."""
-        if hasattr(self.ids, 'input_cedula_tarjeta'):
-            self.ids.input_cedula_tarjeta.bind(focus=self.show_keyboard)
-        if hasattr(self.ids, 'input_contrasena'):
-            self.ids.input_contrasena.bind(focus=self.show_keyboard)
+    # ---------------- SPINNER DINÁMICO ----------------
+    def init_spinner(self, dt):
+        sp = self.ids.spinner_tipo_cuenta
+        sp.text = "Corriente"
+        sp.values = ["Ahorro"]
+        sp.bind(text=lambda s, t: setattr(s, 'values',
+            [v for v in ["Corriente","Ahorro"] if v != t]))
 
-    def show_keyboard(self, instance, value):
-        """Abre teclado virtual cuando el TextInput gana foco, lo cierra al perderlo."""
-        if value:  # gana foco
-            try:
-                subprocess.Popen(['onboard'])  # lanzar teclado virtual
-            except FileNotFoundError:
-                print("No se encontró el teclado virtual 'onboard'. Instala con: sudo apt install onboard")
-        else:  # pierde foco
-            subprocess.Popen(['pkill', 'onboard'])  # cerrar teclado virtual
-
-    # ----------------SPINNER DINÁMICO----------------
-    def init_spinner_tipo_cuenta(self):
-        """Inicializa el spinner con valor por defecto y opciones restantes."""
-        spinner = self.ids.spinner_tipo_cuenta
-        spinner.text = "Corriente"  
-        spinner.values = ["Ahorro"]  
-
-    def bind_spinner_tipo_cuenta(self):
-        """Enlaza el evento de selección del spinner para actualizar dinámicamente las opciones."""
-        spinner = self.ids.spinner_tipo_cuenta
-        spinner.bind(text=self.on_spinner_tipo_cuenta_select)
-
-    def on_spinner_tipo_cuenta_select(self, spinner, text):
-        """Actualiza las opciones del spinner para que la seleccionada no se duplique."""
-        todas_opciones = ["Corriente", "Ahorro"]
-        spinner.values = [v for v in todas_opciones if v != text]
-
-    # ----------------MÉTODO DE PAGO----------------
-    def abrir_dropdown(self):
-        # No se necesita dropdown de momento
-        pass
-
+    # ---------------- MÉTODO DE PAGO ----------------
     def on_metodo_pago(self, metodo=None):
         if hasattr(self.ids, 'box_tarjeta'):
             self.ids.box_tarjeta.opacity = 1
             self.ids.box_tarjeta.disabled = False
             self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
+
+    # ---------------- TECLADO NUMÉRICO ----------------
+    def build_keyboard(self, dt):
+        # Creamos el grid del teclado sin agregarlo al overlay todavía
+        self.keyboard_grid = GridLayout(
+            cols=3, spacing=dp(5), size_hint=(None, None)
+        )
+        self.keyboard_grid.size = (dp(340), dp(280))
+
+        for row in self.keyboard_layout:
+            for key in row:
+                b = Button(
+                    text=key,
+                    font_size=sp(24),
+                    size_hint=(None, None),
+                    size=(dp(100), dp(60)),
+                    background_normal="",
+                    background_color=(0.9,0.9,0.9,1)
+                )
+                b.bind(on_release=self.on_key)
+                self.keyboard_grid.add_widget(b)
+
+    def focus_input(self, input_widget, focus):
+        if focus:
+            # Si hay otro input activo, cerramos su foco
+            if self.numeric_target and self.numeric_target != input_widget:
+                self.numeric_target.focus = False
+            self.numeric_target = input_widget
+            self.show_keyboard()
+        else:
+            # Revisamos si se perdió foco en todos los inputs
+            Clock.schedule_once(self.hide_keyboard_if_no_focus, 0.05)
+
+    def show_keyboard(self):
+        overlay = self.ids.keyboard_overlay
+        overlay.clear_widgets()
+        overlay.add_widget(self.keyboard_grid)
+
+        # Centramos el grid en el overlay
+        self.keyboard_grid.pos = (
+            (overlay.width - self.keyboard_grid.width)/2,
+            (overlay.height - self.keyboard_grid.height)/2
+        )
+
+        overlay.opacity = 1
+        overlay.disabled = False
+
+    def hide_keyboard_if_no_focus(self, dt):
+        # Cerramos teclado solo si ningún input tiene foco
+        inputs = [self.ids.input_cedula_tarjeta, self.ids.input_contrasena]
+        if not any(inp.focus for inp in inputs):
+            self.numeric_target = None
+            overlay = self.ids.keyboard_overlay
+            overlay.opacity = 0
+            overlay.disabled = True
+            overlay.clear_widgets()
+
+    def on_key(self, btn):
+        if not self.numeric_target:
+            return
+        if btn.text == '←':
+            self.numeric_target.text = self.numeric_target.text[:-1]
+        elif btn.text == '✔':
+            self.numeric_target.focus = False
+        else:
+            self.numeric_target.text += btn.text
 
     # ---------------- CONFIRMAR PAGO ----------------
     def confirmar_pago(self):
@@ -454,12 +514,8 @@ class ModalConfirmarPago(ModalView):
             print("Debe ingresar cédula y contraseña")
             return
 
-        # ================= CREAR CADENA POS =================
-        # Formato: "POS|<monto>|<cedula>|<tipo_cuenta>|<clave>"
         cadena_pos = f"POS|{self.total:.2f}|{cedula}|{tipo_cuenta}|{contrasena}"
         print("Cadena POS generada:", cadena_pos)
-        # =====================================================
-
         payment_method = "card"
 
         app = App.get_running_app()
@@ -480,8 +536,6 @@ class ModalConfirmarPago(ModalView):
         )
 
         if exito:
-            carrito = pantalla_recarga.carrito
-
             cola = []
             for item in carrito:
                 cola.extend([item['producto'].litros] * item['cantidad'])
