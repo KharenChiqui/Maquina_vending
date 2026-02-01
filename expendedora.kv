@@ -935,11 +935,11 @@
 
         canvas.before:
             Color:
-                rgba: 1,1,1,1  # fondo blanco del modal
+                rgba: 1,1,1,1  
             RoundedRectangle:
                 pos: self.pos
                 size: self.size
-                radius: [dp(15)]  # esquinas redondeadas
+                radius: [dp(15)]  
 
         Label:
             text: "Ticket de Compra"
@@ -1094,7 +1094,7 @@
                         radius: [dp(15),]
                 on_press: root.dismiss()
 
-            Widget:  # Empuja los botones a los extremos
+            Widget:  
                 size_hint_x: 1
 
             Button:
@@ -1280,7 +1280,7 @@
                                 width: dp(1)
                                 rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
-                # -------- CONTRASEÑA --------
+              
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
@@ -1324,7 +1324,7 @@
                                 width: dp(1)
                                 rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
-                # -------- TIPO DE CUENTA --------
+                
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
@@ -1442,13 +1442,6 @@
             opacity: 0
             disabled: True
 
-            BoxLayout:
-                id: numeric_keyboard_container
-                size_hint: None, None
-                size: dp(360), dp(300)
-                pos: 0,0
-                orientation: 'vertical'
-                padding: dp(10)
 
 
 <ModalInstruccionesBotellon>:
@@ -1594,8 +1587,6 @@
                             pos: self.pos
                             size: self.size
                             radius: [dp(15)]
-
-        # ---------- POPUP LAVADO ----------
         BoxLayout:
             id: popup_lavado
             size_hint: None, None

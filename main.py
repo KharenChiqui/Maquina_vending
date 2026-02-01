@@ -18,7 +18,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
 from kivy.utils import get_color_from_hex
-
+from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
@@ -33,6 +33,7 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import NumericProperty, ListProperty  # para propiedades de Kivy
 from kivy.uix.gridlayout import GridLayout  # para organizar botones
 from kivy.metrics import dp, sp            # para tamaños responsivos
+import os
 
 
 from kivy.properties import (
@@ -413,6 +414,9 @@ from kivy.uix.button import Button
 from kivy.app import App
 from datetime import datetime
 
+class ImageButton(ButtonBehavior, Image):
+    pass
+
 class ModalConfirmarPago(ModalView):
     total = NumericProperty(0)
     numeric_target = None
@@ -426,10 +430,12 @@ class ModalConfirmarPago(ModalView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.focused_input = None  
         Clock.schedule_once(self.init_spinner, 0)
         Clock.schedule_once(self.init_spinner_nacionalidad, 0)
         Clock.schedule_once(self.build_keyboard, 0)
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
+        
 
     def init_spinner(self, dt):
         sp = self.ids.spinner_tipo_cuenta
@@ -460,23 +466,84 @@ class ModalConfirmarPago(ModalView):
             self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
 
     def build_keyboard(self, dt):
+        overlay = self.ids.keyboard_overlay
+        overlay.clear_widgets()
+
         self.keyboard_grid = GridLayout(
-            cols=3, spacing=dp(5), size_hint=(None, None)
+            cols=3,
+            spacing=dp(10),
+            size_hint=(None, None)
         )
-        self.keyboard_grid.size = (dp(340), dp(280))
+
+        btn_width = dp(100)
+        btn_height = dp(60)
+        spacing = self.keyboard_grid.spacing[0]
+        self.keyboard_grid.size = (
+            3 * btn_width + 2 * spacing,
+            4 * btn_height + 3 * spacing
+        )
+
+        with overlay.canvas.before:
+            Color(*App.get_running_app().azul_oscuro)
+            self.bg_rect = RoundedRectangle(
+                pos=overlay.pos,
+                size=overlay.size,
+                radius=[dp(15)]
+            )
+
+        overlay.bind(
+            pos=lambda inst, val: setattr(self.bg_rect, 'pos', val),
+            size=lambda inst, val: setattr(self.bg_rect, 'size', val)
+        )
+
+        def center_grid(*args):
+            self.keyboard_grid.pos = (
+                overlay.center_x - self.keyboard_grid.width / 2,
+                overlay.center_y - self.keyboard_grid.height / 2
+            )
+
+        overlay.bind(pos=center_grid, size=center_grid)
 
         for row in self.keyboard_layout:
             for key in row:
+                if key == '←':  
+                    btn_color = (0.588, 0.008, 0.008, 1) 
+                    text = "DEL"
+
+                elif key == '✔':  
+                    btn_color = (0.118, 0.518, 0.286, 1) 
+                    text = "OK"
+
+                else:
+                    btn_color = App.get_running_app().azul_oscuro
+                    text = key
+
                 b = Button(
-                    text=key,
-                    font_size=sp(24),
+                    text=text,
+                    font_size=sp(20 if text in ["DEL", "OK"] else 24),
                     size_hint=(None, None),
-                    size=(dp(100), dp(60)),
-                    background_normal="",
-                    background_color=(0.9,0.9,0.9,1)
+                    size=(btn_width, btn_height),
+                    background_normal='',
+                    background_color=btn_color,
+                    color=(1, 1, 1, 1)
                 )
+
+                with b.canvas.before:
+                    Color(*btn_color)
+                    rect = RoundedRectangle(pos=b.pos, size=b.size, radius=[dp(10)])
+
+                b.bind(pos=lambda inst, val, r=rect: setattr(r, 'pos', val))
+                b.bind(size=lambda inst, val, r=rect: setattr(r, 'size', val))
+
                 b.bind(on_release=self.on_key)
                 self.keyboard_grid.add_widget(b)
+
+        overlay.add_widget(self.keyboard_grid)
+        center_grid()
+
+        overlay.opacity = 1
+        overlay.disabled = False
+
 
     def focus_input(self, input_widget, focus):
         if focus:
@@ -490,15 +557,13 @@ class ModalConfirmarPago(ModalView):
     def show_keyboard(self):
         overlay = self.ids.keyboard_overlay
         overlay.clear_widgets()
-        overlay.add_widget(self.keyboard_grid)
 
-        self.keyboard_grid.pos = (
-            (overlay.width - self.keyboard_grid.width)/2,
-            (overlay.height - self.keyboard_grid.height)/2
-        )
+        self.keyboard_grid.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        overlay.add_widget(self.keyboard_grid)
 
         overlay.opacity = 1
         overlay.disabled = False
+
 
     def hide_keyboard_if_no_focus(self, dt):
         inputs = [self.ids.input_cedula_tarjeta, self.ids.input_contrasena]
@@ -509,15 +574,24 @@ class ModalConfirmarPago(ModalView):
             overlay.disabled = True
             overlay.clear_widgets()
 
-    def on_key(self, btn):
-        if not self.numeric_target:
+    def on_key(self, instance):
+        text_input = self.numeric_target   # <-- Usamos TU variable, no focused_input
+
+        if not text_input:
             return
-        if btn.text == '←':
-            self.numeric_target.text = self.numeric_target.text[:-1]
-        elif btn.text == '✔':
-            self.numeric_target.focus = False
+
+        key = instance.text
+
+        if key == "DEL":
+            text_input.text = text_input.text[:-1]
+
+        elif key == "OK":
+            overlay = self.ids.keyboard_overlay
+            overlay.opacity = 0
+            overlay.disabled = True
+
         else:
-            self.numeric_target.text += btn.text
+            text_input.text += key
 
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
