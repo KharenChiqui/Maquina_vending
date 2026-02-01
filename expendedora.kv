@@ -1213,7 +1213,6 @@
                 height: self.minimum_height
                 spacing: dp(10)
 
-                # -------- CÉDULA + NACIONALIDAD (V/E) --------
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
@@ -1366,6 +1365,17 @@
                                 width: dp(1)
                                 rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
+                Label:
+                    text: "Debe ingresar los datos solicitados"
+                    size_hint_y: None
+                    height: dp(30)
+                    font_name: 'Intro'
+                    font_size: sp(14)
+                    halign: 'center'
+                    valign: 'middle'
+                    text_size: self.size
+                    color: 0,0,0,1
+            
             Widget:
                 size_hint_y: 1
 
@@ -1631,4 +1641,55 @@
                     Rectangle:
                         pos: self.pos
                         size: (self.width * (self.value / self.max), self.height)
+
+<ModalAgradecimientoCompra>:
+    size_hint: None, None
+    size: dp(600), dp(420)
+    auto_dismiss: False
+    background_color: 0,0,0,0
+
+    FloatLayout:
+        BoxLayout:
+            orientation: "vertical"
+            padding: [dp(20), dp(10), dp(20), dp(10)]
+            spacing: dp(10)
+            size_hint: None, None
+            size: root.size
+            pos: root.pos
+
+            canvas.before:
+                Color:
+                    rgba: 1,1,1,1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15)]
+
+            Label:
+                text: "Gracias por su compra"
+                font_name: 'Intro'
+                font_size: sp(22)
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+                size_hint_y: None
+                height: dp(50)
+                color: 0,0,0,1
+
+            Widget:
+                size_hint_y: None
+                height: dp(2)
+                canvas:
+                    Color:
+                        rgba: app.azul_oscuro
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+            Image:
+                source: "images/despedida.png"
+                size_hint: (1, 1)
+                allow_stretch: True
+                keep_ratio: True
+                pos_hint: {"center_x": 0.5}
 

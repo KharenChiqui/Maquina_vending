@@ -634,7 +634,6 @@ class ModalInstruccionesBotellon(ModalView):
         self.ids.btn_llenado.disabled = True
         self.ids.btn_continuar.disabled = False
 
-    # ---------- CONTINUAR ----------
     def continuar(self):
         self.cola_botellones.pop(0)
         self.dismiss()
@@ -644,8 +643,16 @@ class ModalInstruccionesBotellon(ModalView):
             modal.cola_botellones = self.cola_botellones
             modal.open()
         else:
-            App.get_running_app().root.current = "inicio"
+            modal = ModalAgradecimientoCompra()
+            modal.open()
 
+class ModalAgradecimientoCompra(ModalView):
+    def on_open(self):
+        Clock.schedule_once(self.cerrar_y_volver_inicio, 4)
+
+    def cerrar_y_volver_inicio(self, dt):
+        self.dismiss()
+        App.get_running_app().root.current = "inicio"
 
 
 
