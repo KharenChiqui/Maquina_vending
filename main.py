@@ -404,6 +404,15 @@ class ModalTicketPago(ModalView):
         modal.total = total
         modal.open()
     
+from kivy.clock import Clock
+from kivy.metrics import dp, sp
+from kivy.properties import NumericProperty
+from kivy.uix.modalview import ModalView
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.app import App
+from datetime import datetime
+
 class ModalConfirmarPago(ModalView):
     total = NumericProperty(0)
     numeric_target = None
@@ -418,6 +427,7 @@ class ModalConfirmarPago(ModalView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_once(self.init_spinner, 0)
+        Clock.schedule_once(self.init_spinner_nacionalidad, 0)
         Clock.schedule_once(self.build_keyboard, 0)
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
 
@@ -425,17 +435,30 @@ class ModalConfirmarPago(ModalView):
         sp = self.ids.spinner_tipo_cuenta
         sp.text = "Corriente"
         sp.values = ["Ahorro"]
-        sp.bind(text=lambda s, t: setattr(s, 'values',
-            [v for v in ["Corriente","Ahorro"] if v != t]))
+        sp.bind(
+            text=lambda s, t: setattr(
+                s, 'values',
+                [v for v in ["Corriente","Ahorro"] if v != t]
+            )
+        )
 
-    # ---------------- MÉTODO DE PAGO ----------------
+    def init_spinner_nacionalidad(self, dt):
+        sp = self.ids.spinner_nacionalidad
+        sp.text = "V"
+        sp.values = ["E"]
+        sp.bind(
+            text=lambda s, t: setattr(
+                s, "values",
+                [v for v in ["V","E"] if v != t]
+            )
+        )
+
     def on_metodo_pago(self, metodo=None):
         if hasattr(self.ids, 'box_tarjeta'):
             self.ids.box_tarjeta.opacity = 1
             self.ids.box_tarjeta.disabled = False
             self.ids.box_tarjeta.height = self.ids.box_tarjeta.minimum_height
 
-    # ---------------- TECLADO NUMÉRICO ----------------
     def build_keyboard(self, dt):
         self.keyboard_grid = GridLayout(
             cols=3, spacing=dp(5), size_hint=(None, None)
@@ -496,20 +519,21 @@ class ModalConfirmarPago(ModalView):
         else:
             self.numeric_target.text += btn.text
 
-    
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
 
         cedula = self.ids.input_cedula_tarjeta.text.strip()
         contrasena = self.ids.input_contrasena.text.strip()
         tipo_cuenta = self.ids.spinner_tipo_cuenta.text.strip()
+        nacionalidad = self.ids.spinner_nacionalidad.text.strip()
 
         if not cedula or not contrasena:
             print("Debe ingresar cédula y contraseña")
             return
 
-        cadena_pos = f"POS|{self.total:.2f}|{cedula}|{tipo_cuenta}|{contrasena}"
+        cadena_pos = f"POS|{self.total:.2f}|{nacionalidad}|{cedula}|{tipo_cuenta}|{contrasena}"
         print("Cadena POS generada:", cadena_pos)
+
         payment_method = "card"
 
         app = App.get_running_app()
@@ -520,7 +544,7 @@ class ModalConfirmarPago(ModalView):
             remote_payment_id=f"PAGO-{datetime.now().strftime('%Y%m%d%H%M%S')}",
             payment_method=payment_method,
             bank="",
-            reference_code=cedula,
+            reference_code=f"{nacionalidad}-{cedula}",
             amount=self.total,
             receipt="",
             recharge=0,

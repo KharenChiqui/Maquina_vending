@@ -1213,6 +1213,7 @@
                 height: self.minimum_height
                 spacing: dp(10)
 
+                # -------- CÉDULA + NACIONALIDAD (V/E) --------
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
@@ -1228,6 +1229,31 @@
                         text_size: self.size
                         color: 0,0,0,1
 
+                    Spinner:
+                        id: spinner_nacionalidad
+                        text: "V"
+                        values: ["E"]
+                        size_hint_x: None
+                        width: dp(70)
+                        background_normal: ""
+                        background_color: 1,1,1,0.3
+                        color: 0,0,0,1
+                        font_name: 'Intro'
+                        font_size: sp(16)
+                        option_cls: 'SpinnerOptionCustom'
+                        canvas.before:
+                            Color:
+                                rgba: 1,1,1,0.3
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(15)]
+                            Color:
+                                rgba: app.azul_oscuro[0], app.azul_oscuro[1], app.azul_oscuro[2], 0.5
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
+
                     TextInput:
                         id: input_cedula_tarjeta
                         multiline: False
@@ -1237,7 +1263,7 @@
                         on_focus: root.focus_input(self, self.focus)
                         padding: dp(12), dp(12)
                         size_hint_x: None
-                        width: dp(240)
+                        width: dp(160)
                         background_normal: ""
                         background_active: ""
                         foreground_color: 0,0,0,1
@@ -1255,6 +1281,7 @@
                                 width: dp(1)
                                 rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
+                # -------- CONTRASEÑA --------
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
@@ -1298,6 +1325,7 @@
                                 width: dp(1)
                                 rounded_rectangle: (self.x, self.y, self.width, self.height, dp(15))
 
+                # -------- TIPO DE CUENTA --------
                 BoxLayout:
                     size_hint_y: None
                     height: dp(45)
