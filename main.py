@@ -433,7 +433,7 @@ class ModalConfirmarPago(ModalView):
         self.focused_input = None  
         Clock.schedule_once(self.init_spinner, 0)
         Clock.schedule_once(self.init_spinner_nacionalidad, 0)
-        Clock.schedule_once(self.build_keyboard, 0)
+        Clock.schedule_once(self.build_keyboard, 0.1)
         Clock.schedule_once(lambda dt: self.on_metodo_pago(), 0)
         
 
@@ -467,7 +467,9 @@ class ModalConfirmarPago(ModalView):
 
     def build_keyboard(self, dt):
         overlay = self.ids.keyboard_overlay
-        overlay.clear_widgets()
+
+        if hasattr(self, "keyboard_grid"):
+            return
 
         self.keyboard_grid = GridLayout(
             cols=3,
@@ -478,6 +480,7 @@ class ModalConfirmarPago(ModalView):
         btn_width = dp(100)
         btn_height = dp(60)
         spacing = self.keyboard_grid.spacing[0]
+
         self.keyboard_grid.size = (
             3 * btn_width + 2 * spacing,
             4 * btn_height + 3 * spacing
@@ -492,90 +495,105 @@ class ModalConfirmarPago(ModalView):
             )
 
         overlay.bind(
-            pos=lambda inst, val: setattr(self.bg_rect, 'pos', val),
-            size=lambda inst, val: setattr(self.bg_rect, 'size', val)
+            pos=lambda inst, val: setattr(self.bg_rect, "pos", val),
+            size=lambda inst, val: setattr(self.bg_rect, "size", val),
         )
 
         def center_grid(*args):
             self.keyboard_grid.pos = (
-                overlay.center_x - self.keyboard_grid.width / 2,
-                overlay.center_y - self.keyboard_grid.height / 2
+                overlay.x + (overlay.width - self.keyboard_grid.width) / 2,
+                overlay.y + (overlay.height - self.keyboard_grid.height) / 2,
             )
 
         overlay.bind(pos=center_grid, size=center_grid)
 
         for row in self.keyboard_layout:
             for key in row:
-                if key == '←':  
-                    btn_color = (0.588, 0.008, 0.008, 1) 
-                    text = "DEL"
 
-                elif key == '✔':  
-                    btn_color = (0.118, 0.518, 0.286, 1) 
+                if key == "←":
+                    btn_color = (0.588, 0.008, 0.008, 1)
+                    text = "DEL"
+                    font_size = sp(20)
+
+                elif key == "✔":
+                    btn_color = (0.118, 0.518, 0.286, 1)
                     text = "OK"
+                    font_size = sp(20)
 
                 else:
                     btn_color = App.get_running_app().azul_oscuro
                     text = key
+                    font_size = sp(24)
 
                 b = Button(
                     text=text,
-                    font_size=sp(20 if text in ["DEL", "OK"] else 24),
+                    font_size=font_size,
                     size_hint=(None, None),
                     size=(btn_width, btn_height),
-                    background_normal='',
+                    background_normal="",
                     background_color=btn_color,
-                    color=(1, 1, 1, 1)
+                    color=(1, 1, 1, 1),
                 )
 
                 with b.canvas.before:
                     Color(*btn_color)
                     rect = RoundedRectangle(pos=b.pos, size=b.size, radius=[dp(10)])
 
-                b.bind(pos=lambda inst, val, r=rect: setattr(r, 'pos', val))
-                b.bind(size=lambda inst, val, r=rect: setattr(r, 'size', val))
+                b.bind(pos=lambda inst, val, r=rect: setattr(r, "pos", val))
+                b.bind(size=lambda inst, val, r=rect: setattr(r, "size", val))
 
                 b.bind(on_release=self.on_key)
                 self.keyboard_grid.add_widget(b)
 
         overlay.add_widget(self.keyboard_grid)
-        center_grid()
 
-        overlay.opacity = 1
-        overlay.disabled = False
-
+        overlay.opacity = 0
+        overlay.disabled = True
 
     def focus_input(self, input_widget, focus):
         if focus:
             if self.numeric_target and self.numeric_target != input_widget:
                 self.numeric_target.focus = False
+
             self.numeric_target = input_widget
             self.show_keyboard()
+
         else:
             Clock.schedule_once(self.hide_keyboard_if_no_focus, 0.05)
 
+
     def show_keyboard(self):
         overlay = self.ids.keyboard_overlay
-        overlay.clear_widgets()
 
-        self.keyboard_grid.pos_hint = {"center_x": 0.5, "center_y": 0.5}
-        overlay.add_widget(self.keyboard_grid)
+        if not overlay.parent:
+            self.add_widget(overlay)
+
+        overlay.size = (dp(360), dp(300))
+        overlay.pos_hint = {"center_x": 0.5, "center_y": 0.2}
 
         overlay.opacity = 1
         overlay.disabled = False
 
+        self.keyboard_grid.pos = (
+            overlay.x + (overlay.width - self.keyboard_grid.width) / 2,
+            overlay.y + (overlay.height - self.keyboard_grid.height) / 2,
+        )
 
     def hide_keyboard_if_no_focus(self, dt):
         inputs = [self.ids.input_cedula_tarjeta, self.ids.input_contrasena]
+
         if not any(inp.focus for inp in inputs):
             self.numeric_target = None
             overlay = self.ids.keyboard_overlay
+
             overlay.opacity = 0
             overlay.disabled = True
-            overlay.clear_widgets()
 
+            if overlay.parent:
+                overlay.parent.remove_widget(overlay)
+  
     def on_key(self, instance):
-        text_input = self.numeric_target   # <-- Usamos TU variable, no focused_input
+        text_input = self.numeric_target
 
         if not text_input:
             return
@@ -589,9 +607,12 @@ class ModalConfirmarPago(ModalView):
             overlay = self.ids.keyboard_overlay
             overlay.opacity = 0
             overlay.disabled = True
+            if overlay.parent:
+                overlay.parent.remove_widget(overlay)
 
         else:
             text_input.text += key
+
 
     def confirmar_pago(self):
         print("CONFIRMAR PAGO EJECUTADO")
